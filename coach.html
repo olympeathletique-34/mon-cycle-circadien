@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espace Coach · Olympe Athlétique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="eyebrow">Espace coach</div>
+    <h1 style="margin-top:6px">Tes clients</h1>
+  </div>
+  <div style="text-align:right">
+    <div class="brand">Olympe Athlétique</div>
+    <div class="compte-bar" id="compteBar" style="display:none;justify-content:flex-end;margin-top:4px"></div>
+  </div>
+</header>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<section id="bloc-login">
+  <p class="lead">Connecte-toi avec ton adresse de coach pour accéder au tableau de bord.</p>
+  <div class="carte">
+    <label class="field" for="login-email">Ton adresse email</label>
+    <input type="email" id="login-email" placeholder="olympeathletique@gmail.com" autocomplete="email">
+    <button class="btn" id="btnEnvoyerLien">Recevoir mon lien de connexion</button>
+    <p class="muted" id="loginMsg" style="margin-top:12px"></p>
+  </div>
+</section>
+
+<!-- ═══════════ ACCÈS REFUSÉ ═══════════ -->
+<section id="bloc-refuse" style="display:none">
+  <div class="alerte-box">Ce compte n'a pas les droits « coach ». Si c'est une erreur, passe le rôle de ce compte à <code>coach</code> dans la table <code>profiles</code> sur Supabase.</div>
+</section>
+
+<!-- ═══════════ TABLEAU DE BORD ═══════════ -->
+<section id="bloc-dashboard" style="display:none">
+  <div class="carte">
+    <div id="listeClients"><p class="muted">Chargement…</p></div>
+  </div>
+  <p class="muted">Clique sur un client pour voir son diagnostic complet et fixer un ajustement (fenêtre alimentaire ou objectifs poids / tour de taille).</p>
+</section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="assets/supabase-client.js"></script>
+<script>
+const esc = s => String(s??"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmtDateHeure = iso => new Date(iso).toLocaleDateString("fr-FR",{day:"numeric",month:"short",year:"numeric"});
+const OBJ_LABELS = {perte:"Perte de poids", perf:"Performance", sante:"Santé & sommeil"};
+
+function afficherBloc(id){
+  ["bloc-login","bloc-refuse","bloc-dashboard"].forEach(b=>document.getElementById(b).style.display = b===id ? "block" : "none");
+}
+
+function afficherCompteBar(profil){
+  const bar = document.getElementById("compteBar");
+  bar.style.display = "flex";
+  bar.innerHTML = `<span>${esc(profil.prenom || profil.email)}<span class="badge-role">Coach</span></span><button class="lien" id="btnDeco">Se déconnecter</button>`;
+  document.getElementById("btnDeco").addEventListener("click", async ()=>{ await deconnexion(); location.reload(); });
+}
+
+async function chargerClients(){
+  const { data, error } = await sb
+    .from("profiles")
+    .select("id, prenom, email, created_at, bilans(data, updated_at)")
+    .eq("role", "client")
+    .order("created_at", { ascending:false });
+  const conteneur = document.getElementById("listeClients");
+  if(error){ conteneur.innerHTML = `<div class="alerte-box">Erreur de chargement : ${esc(error.message)}</div>`; return; }
+  if(!data || !data.length){ conteneur.innerHTML = `<p class="etat-vide">Aucun client pour l'instant. Dès qu'un client se connecte pour la première fois avec son email, il apparaît ici.</p>`; return; }
+
+  conteneur.innerHTML = data.map(c=>{
+    const b = Array.isArray(c.bilans) ? c.bilans[0] : c.bilans;
+    const nom = (b && b.data && b.data.prenom) ? b.data.prenom : (c.prenom || c.email);
+    const obj = (b && b.data && b.data.objectif) ? OBJ_LABELS[b.data.objectif] || b.data.objectif : null;
+    const statut = !b ? "Pas encore commencé" : (obj ? obj : "Bilan en cours");
+    const maj = b && b.updated_at ? `Mis à jour le ${fmtDateHeure(b.updated_at)}` : "";
+    return `<div class="client-row">
+      <div class="info">
+        <b>${esc(nom)}</b>
+        <span>${esc(c.email)} · ${esc(statut)}${maj ? " · "+esc(maj) : ""}</span>
+      </div>
+      <a class="btn or" href="index.html?client=${encodeURIComponent(c.id)}">Ouvrir</a>
+    </div>`;
+  }).join("");
+}
+
+document.getElementById("btnEnvoyerLien").addEventListener("click", async ()=>{
+  const email = document.getElementById("login-email").value.trim();
+  const msg = document.getElementById("loginMsg");
+  if(!email){ msg.textContent = "Indique ton adresse email."; return; }
+  const btn = document.getElementById("btnEnvoyerLien");
+  btn.disabled = true; msg.textContent = "Envoi en cours…";
+  const { error } = await envoyerLienMagique(email, window.location.href.split("?")[0].split("#")[0]);
+  btn.disabled = false;
+  msg.textContent = error ? "Erreur : " + error.message : "Lien envoyé ! Regarde ta boîte mail (et tes spams) et clique dessus.";
+});
+
+async function demarrer(){
+  const session = await sessionActuelle();
+  if(!session){ afficherBloc("bloc-login"); return; }
+  const profil = await profilActuel();
+  if(!profil){ afficherBloc("bloc-login"); document.getElementById("loginMsg").textContent = "Impossible de charger ton profil."; return; }
+  afficherCompteBar(profil);
+  if(profil.role !== "coach"){ afficherBloc("bloc-refuse"); return; }
+  afficherBloc("bloc-dashboard");
+  chargerClients();
+}
+
+sb.auth.onAuthStateChange((event)=>{
+  if(event === "SIGNED_IN") demarrer();
+  if(event === "SIGNED_OUT") afficherBloc("bloc-login");
+});
+demarrer();
+</script>
+</body>
+</html>

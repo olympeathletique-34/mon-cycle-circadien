@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Circadien — Espace Client · Olympe Athlétique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="eyebrow">Espace client</div>
+  </div>
+  <div style="text-align:right">
+    <div class="brand">Olympe Athlétique</div>
+    <div class="compte-bar no-print" id="compteBar" style="display:none;justify-content:flex-end;margin-top:4px"></div>
+  </div>
+</header>
+
+<div class="prog no-print">
+  <div class="prog-steps" id="progSteps">
+    <span class="on"></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <div class="prog-label" id="progLabel"><span id="progTxt">Accueil</span><span id="badgeSauv" style="float:right;color:var(--vert);text-transform:none;letter-spacing:0;display:none">✓ Enregistré</span></div>
+</div>
+
+<!-- ═══════════ ÉCRAN LOGIN ═══════════ -->
+<section class="screen active" id="ecran-login">
+  <h1>Décode ton <em>rythme circadien</em></h1>
+  <p class="lead">Connecte-toi pour accéder à ton bilan. Il te suivra sur tous tes appareils.</p>
+  <div class="carte">
+    <label class="field" for="login-email">Ton adresse email</label>
+    <input type="email" id="login-email" placeholder="prenom@exemple.com" autocomplete="email">
+    <button class="btn" id="btnEnvoyerLien">Recevoir mon lien de connexion</button>
+    <p class="muted" id="loginMsg" style="margin-top:12px"></p>
+  </div>
+</section>
+
+<!-- ═══════════ ÉCRAN 0 : ACCUEIL ═══════════ -->
+<section class="screen" id="ecran-accueil">
+  <div class="carte" id="carteReprise" style="display:none;border-color:var(--or)">
+    <h3>Bilan enregistré sur ton compte</h3>
+    <p class="muted" id="repriseInfo"></p>
+    <button class="btn or" id="btnVoirBilan">Revoir mon diagnostic</button>
+    <button class="btn ghost" id="btnEffacer">Repartir de zéro</button>
+  </div>
+  <h1>Décode ton <em>rythme circadien</em></h1>
+  <p class="lead">Ce bilan est construit sur le protocole du Dr Satchin Panda (chercheur au Salk Institute, auteur de <em>The Circadian Code</em>). En 10 minutes, tu obtiens ton diagnostic et ton plan personnalisé : fenêtre alimentaire, horaires d'entraînement, sommeil et lumière.</p>
+
+  <div class="carte">
+    <label class="field" for="prenom">Ton prénom</label>
+    <input type="text" id="prenom" placeholder="Ex. Julien" autocomplete="given-name">
+
+    <label class="field">Ton objectif principal</label>
+    <div class="choices" id="objectifs">
+      <button class="choice" data-obj="perte">Perte de poids<small>Fenêtre cible 8–9 h — les meilleurs résultats observés par le labo Panda</small></button>
+      <button class="choice" data-obj="perf">Performance sportive<small>Fenêtre cible 10 h — compatible avec les grosses séances du soir</small></button>
+      <button class="choice" data-obj="sante">Santé, énergie &amp; sommeil<small>Fenêtre cible 11–12 h — le socle durable, tenable à vie</small></button>
+    </div>
+  </div>
+
+  <button class="btn" id="btnStart" disabled>Commencer le bilan</button>
+  <p class="muted" style="margin-top:12px">2 tests · Test 1 : ton état actuel (45 questions oui/non) · Test 2 : tes 6 horaires clés</p>
+  <button class="btn ghost" id="btnSuiviAccueil" style="margin-top:18px">Mon suivi poids &amp; tour de taille</button>
+</section>
+
+<!-- ═══════════ ÉCRANS 1-3 : TEST 1 ═══════════ -->
+<section class="screen" id="ecran-physique">
+  <span class="chip">Test 1 · Section 1/3</span>
+  <h2>Santé physique</h2>
+  <p class="muted">Réponds honnêtement. Il n'y a pas de bonne ou de mauvaise réponse.</p>
+  <div class="carte" id="qs-physique"></div>
+  <button class="btn" data-next="ecran-mental" disabled>Continuer</button>
+</section>
+
+<section class="screen" id="ecran-mental">
+  <span class="chip">Test 1 · Section 2/3</span>
+  <h2>Santé mentale &amp; énergie</h2>
+  <div class="carte" id="qs-mental"></div>
+  <button class="btn" data-next="ecran-habitudes" disabled>Continuer</button>
+</section>
+
+<section class="screen" id="ecran-habitudes">
+  <span class="chip">Test 1 · Section 3/3</span>
+  <h2>Habitudes quotidiennes</h2>
+  <p class="muted">Chaque « oui » ici est une perturbation directe de ton horloge — et donc un levier d'action.</p>
+  <div class="carte" id="qs-habitudes"></div>
+  <button class="btn" data-next="ecran-horaires" disabled>Continuer</button>
+</section>
+
+<!-- ═══════════ ÉCRAN 4 : TEST 2 ═══════════ -->
+<section class="screen" id="ecran-horaires">
+  <span class="chip">Test 2</span>
+  <h2>Tes 6 horaires circadiens</h2>
+  <p class="muted">Indique tes horaires <b>habituels</b>. Le Dr Panda recommande de les suivre sur 7 jours réels — ici on part de ta semaine type.</p>
+
+  <div class="carte">
+    <h3>Jour de semaine</h3>
+    <label class="field" for="s-reveil">Réveil</label>
+    <input type="time" id="s-reveil" value="07:00">
+    <label class="field" for="s-alarme">As-tu besoin d'un réveil pour te lever ?</label>
+    <select id="s-alarme"><option value="oui">Oui, sinon je dors</option><option value="non">Non, je me réveille seul</option></select>
+    <label class="field" for="s-premiere">Première bouchée ou gorgée <span class="muted">(café au lait/sucré compris — seule l'eau ne compte pas)</span></label>
+    <input type="time" id="s-premiere" value="07:30">
+    <label class="field" for="s-derniere">Dernière bouchée ou gorgée de la journée</label>
+    <input type="time" id="s-derniere" value="21:30">
+    <label class="field" for="s-ecrans">Extinction de tous les écrans</label>
+    <input type="time" id="s-ecrans" value="22:30">
+    <label class="field" for="s-coucher">Coucher (lumières éteintes, yeux fermés)</label>
+    <input type="time" id="s-coucher" value="23:00">
+    <label class="field" for="s-sport">Heure habituelle de ta séance de sport</label>
+    <select id="s-sport">
+      <option value="">Pas de sport ce jour-là</option>
+      <option value="matin">Le matin, avant la première bouchée</option>
+      <option value="matin-apres">Le matin, après le petit-déjeuner</option>
+      <option value="midi">Le midi</option>
+      <option value="aprem">Entre 15 h et le dîner</option>
+      <option value="soir">Après le dîner / après 21 h</option>
+    </select>
+  </div>
+
+  <div class="carte">
+    <h3>Week-end</h3>
+    <label class="field" for="w-reveil">Réveil</label>
+    <input type="time" id="w-reveil" value="08:30">
+    <label class="field" for="w-premiere">Première bouchée ou gorgée</label>
+    <input type="time" id="w-premiere" value="09:00">
+    <label class="field" for="w-derniere">Dernière bouchée ou gorgée</label>
+    <input type="time" id="w-derniere" value="22:30">
+    <label class="field" for="w-coucher">Coucher</label>
+    <input type="time" id="w-coucher" value="23:45">
+  </div>
+
+  <button class="btn or" id="btnResultats">Voir mon diagnostic</button>
+</section>
+
+<!-- ═══════════ ÉCRAN 5 : RÉSULTATS ═══════════ -->
+<section class="screen" id="ecran-resultats">
+  <span class="chip">Diagnostic</span>
+  <h1 id="titreResultats">Ton code circadien</h1>
+
+  <div class="info-box no-print" id="bandeauCoach" style="display:none"></div>
+
+  <div class="score-grid" id="scoreGrid"></div>
+  <div class="carte"><div id="verdictsTest1"></div></div>
+
+  <h2 style="margin-top:26px">Tes chiffres circadiens</h2>
+  <div class="carte"><div id="kpis"></div></div>
+
+  <div class="carte cadran-box">
+    <h3>Ta journée sur le cadran 24 h</h3>
+    <div id="cadran"></div>
+    <div class="legende">
+      <span><i style="background:#12203A"></i>Sommeil</span>
+      <span><i style="background:#C98A1B"></i>Fenêtre alimentaire actuelle</span>
+      <span><i style="background:#3E7C5B"></i>Fenêtre cible</span>
+      <span id="legCoach" style="display:none"><i style="background:#6F94B4"></i>Fenêtre du coach</span>
+    </div>
+  </div>
+
+  <h2 style="margin-top:26px" id="titrePlan">Ton plan personnalisé</h2>
+
+  <div class="carte reco">
+    <h3>1 · Ta fenêtre alimentaire (TRE)</h3>
+    <div id="recoTRE"></div>
+  </div>
+
+  <div class="carte coach" id="carteCoach">
+    <h3>Ajustement du coach</h3>
+    <p class="muted" style="margin-top:4px">La fenêtre du protocole reste la référence. Pour un cas particulier, ton coach peut en fixer une autre — c'est alors celle-ci que tu appliques.</p>
+    <div id="coachVue"></div>
+    <div id="coachEdit" style="display:none">
+      <label class="field" for="c-actif">Appliquer un ajustement</label>
+      <select id="c-actif">
+        <option value="non">Non — fenêtre du protocole</option>
+        <option value="oui">Oui — fenêtre personnalisée</option>
+      </select>
+      <div id="coachChamps">
+        <div class="grid2">
+          <div><label class="field" for="c-debut">Première bouchée</label><input type="time" id="c-debut" value="08:00"></div>
+          <div><label class="field" for="c-fin">Dernière bouchée</label><input type="time" id="c-fin" value="18:00"></div>
+        </div>
+        <p class="muted" id="c-duree" style="margin-top:8px"></p>
+        <label class="field" for="c-motif">Motif (visible par le client)</label>
+        <textarea id="c-motif" rows="3" placeholder="Ex. 10 h au lieu de 8 h : sous traitement GLP-1, l'appétit est coupé — priorité à 3 prises protéinées dans la fenêtre (1,6–2 g/kg/jour) pour protéger la masse musculaire."></textarea>
+      </div>
+      <button class="btn small" id="btnCoachSave" style="margin-top:14px">Enregistrer l'ajustement</button>
+    </div>
+  </div>
+
+  <div class="carte reco">
+    <h3>2 · Nutrition dans la fenêtre</h3>
+    <ul id="recoNutrition"></ul>
+  </div>
+
+  <div class="carte reco">
+    <h3>3 · Sport aux bons horaires</h3>
+    <ul id="recoSport"></ul>
+  </div>
+
+  <div class="carte reco">
+    <h3>4 · Lumière &amp; sommeil</h3>
+    <ul id="recoSommeil"></ul>
+  </div>
+
+  <p class="note-livre">Protocole issu de <em>The Circadian Code</em> — Dr Satchin Panda (Salk Institute). Ce bilan ne remplace pas un avis médical : parles-en à ton médecin avant de changer ton alimentation, surtout si tu suis un traitement.</p>
+
+  <button class="btn or no-print" id="btnSuiviResultats">Mon suivi hebdomadaire</button>
+  <button class="btn no-print" onclick="window.print()">Imprimer / Enregistrer en PDF</button>
+  <button class="btn ghost no-print" id="btnRefaire">Refaire le bilan</button>
+  <a class="btn ghost no-print" id="btnRetourCoach" href="coach.html" style="display:none;text-align:center">← Retour à l'espace coach</a>
+
+  <footer>Olympe Athlétique · Bâtis ton corps comme un temple, règle-le comme une horloge.</footer>
+</section>
+
+<!-- ═══════════ ÉCRAN SUIVI : POIDS & TOUR DE TAILLE ═══════════ -->
+<section class="screen" id="ecran-suivi">
+  <span class="chip">Suivi</span>
+  <h2>Ton suivi hebdomadaire</h2>
+  <p class="muted">Une mesure par semaine, le même jour, le matin à jeun après être passé aux toilettes. Tour de taille au niveau du nombril, ruban horizontal, ventre relâché, en fin d'expiration.</p>
+
+  <div class="carte">
+    <h3>Point de départ</h3>
+    <div class="grid2">
+      <div><label class="field" for="m-taille">Taille (cm)</label><input type="number" id="m-taille" inputmode="decimal" min="120" max="230" placeholder="178"></div>
+      <div><label class="field" for="m-sexe">Sexe</label><select id="m-sexe"><option value="h">Homme</option><option value="f">Femme</option></select></div>
+    </div>
+  </div>
+
+  <div class="carte" id="carteNouvelleMesure">
+    <h3>Nouvelle mesure</h3>
+    <label class="field" for="m-date">Date</label>
+    <input type="date" id="m-date">
+    <div class="grid2">
+      <div><label class="field" for="m-poids">Poids (kg)</label><input type="number" id="m-poids" inputmode="decimal" step="0.1" min="30" max="300" placeholder="92,4"></div>
+      <div><label class="field" for="m-tour">Tour de taille (cm)</label><input type="number" id="m-tour" inputmode="decimal" step="0.5" min="50" max="200" placeholder="104"></div>
+    </div>
+    <button class="btn" id="btnMesure" disabled>Enregistrer la mesure</button>
+  </div>
+
+  <div id="suiviBilan"></div>
+
+  <div class="carte coach">
+    <h3>Objectifs fixés par le coach</h3>
+    <div id="ciblesVue"></div>
+    <div id="ciblesEdit" style="display:none">
+      <div class="grid2">
+        <div><label class="field" for="c-poids">Poids cible (kg)</label><input type="number" id="c-poids" inputmode="decimal" step="0.5" min="30" max="300"></div>
+        <div><label class="field" for="c-tour">Tour de taille cible (cm)</label><input type="number" id="c-tour" inputmode="decimal" step="0.5" min="50" max="200"></div>
+      </div>
+      <button class="btn small" id="btnCiblesSave" style="margin-top:14px">Enregistrer les objectifs</button>
+    </div>
+  </div>
+
+  <p class="note-livre">Repères : IMC (OMS) — 18,5 à 24,9 normal, 25 à 29,9 surpoids, ≥ 30 obésité. Tour de taille (homme) — ≥ 94 cm risque accru, ≥ 102 cm risque élevé ; (femme) ≥ 80 / ≥ 88 cm. Ratio tour de taille / hauteur — viser &lt; 0,5. L'IMC ne distingue pas muscle et graisse : quand on s'entraîne en force, c'est le tour de taille qui dit la vérité.</p>
+
+  <button class="btn ghost" id="btnSuiviRetour">Retour</button>
+</section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="assets/supabase-client.js"></script>
+<script>
+/* ══════════ DONNÉES : LES 45 QUESTIONS DU LIVRE ══════════ */
+const QUESTIONS = {
+  physique: [
+    "Ton médecin t'a-t-il dit que tu étais en surpoids ?",
+    "As-tu un diagnostic de prédiabète ou de diabète ?",
+    "Prends-tu des médicaments sur ordonnance pour une maladie chronique (cœur, tension, cholestérol, asthme, reflux, articulations, insomnie) ?",
+    "Prends-tu des remèdes sans ordonnance contre le reflux, la douleur, les allergies ou l'insomnie ?",
+    "As-tu un cycle menstruel irrégulier ?",
+    "As-tu des bouffées de chaleur ou un sommeil perturbé liés à la ménopause ?",
+    "As-tu une baisse de libido ?",
+    "As-tu un diagnostic de maladie inflammatoire chronique (sclérose en plaques, maladie inflammatoire de l'intestin…) ?",
+    "As-tu des douleurs lombaires fréquentes ?",
+    "As-tu un diagnostic d'apnée du sommeil ?",
+    "Ronfles-tu ?",
+    "Te réveilles-tu congestionné, le nez bouché ?",
+    "As-tu souvent des douleurs abdominales, brûlures d'estomac ou indigestions ?",
+    "As-tu souvent des maux de tête ou des migraines ?",
+    "As-tu les yeux fatigués en fin de journée ?"
+  ],
+  mental: [
+    "Te sens-tu anxieux ?",
+    "As-tu le moral bas ou des coups de blues fréquents ?",
+    "As-tu du mal à rester attentif et concentré ?",
+    "As-tu du brouillard mental ?",
+    "Perds-tu souvent tes affaires (lunettes, câble, clés) ?",
+    "Oublies-tu les noms et les visages ?",
+    "Dépends-tu d'un agenda ou de to-do lists pour tout ?",
+    "Es-tu fatigué l'après-midi ?",
+    "Te réveilles-tu fatigué ?",
+    "As-tu un diagnostic de stress post-traumatique (TSPT) ?",
+    "As-tu un diagnostic de TDAH, d'autisme ou de trouble bipolaire ?",
+    "As-tu des fringales ?",
+    "As-tu l'impression de manquer de volonté face à la nourriture ?",
+    "T'a-t-on déjà dit que tu étais irritable ?",
+    "As-tu du mal à prendre des décisions ?"
+  ],
+  habitudes: [
+    "Fais-tu moins de 5 000 pas par jour ?",
+    "Passes-tu moins d'une heure dehors à la lumière du jour ?",
+    "Fais-tu du sport après 21 h ?",
+    "Passes-tu plus d'une heure sur écran (ordi, téléphone, TV) avant le coucher ?",
+    "Bois-tu un verre d'alcool ou plus après le dîner ?",
+    "Oublies-tu de boire de l'eau dans la journée ?",
+    "Bois-tu du café, du thé ou un soda caféiné l'après-midi ou le soir ?",
+    "Consommes-tu du chocolat, des aliments très glucidiques (donuts, pizza) ou des boissons énergisantes pour tenir ?",
+    "Grignotes-tu tard le soir, même sans vraie faim ?",
+    "Manges-tu ou bois-tu autre chose que de l'eau après 19 h ?",
+    "Dors-tu avec une lumière allumée ?",
+    "Réserves-tu moins de 7 h à ton sommeil chaque nuit ?",
+    "As-tu besoin d'un réveil pour te lever le matin ?",
+    "Rattrapes-tu ton sommeil le week-end ?",
+    "Manges-tu dès qu'on te présente de la nourriture, même sans faim ?"
+  ]
+};
+
+/* ══════════ ÉTAT ══════════ */
+const COACH_DEFAUT = { actif:false, debut:"08:00", fin:"18:00", motif:"", poidsCible:null, tourCible:null };
+const MESURES_DEFAUT = { taille:null, sexe:"h", entrees:[] };
+const etat = {
+  prenom:"", objectif:"", reponses:{physique:{},mental:{},habitudes:{}},
+  coach:{...COACH_DEFAUT}, mesures:{...MESURES_DEFAUT, entrees:[]}
+};
+const esc = s => String(s??"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ══════════ SESSION / RÔLE ══════════ */
+let monUserId = null;      // utilisateur connecté
+let monProfil = null;      // sa ligne "profiles"
+let modeCoach = false;     // true = un coach consulte le bilan d'un client
+let cibleUserId = null;    // id du compte dont on affiche/édite le bilan
+
+/* ══════════ SAUVEGARDE (Supabase) ══════════ */
+async function chargerBilan(userId){
+  const { data, error } = await sb.from("bilans").select("data,updated_at").eq("user_id", userId).maybeSingle();
+  if(error){ console.error(error); return null; }
+  return data;
+}
+const IDS_HORAIRES = ["s-reveil","s-alarme","s-premiere","s-derniere","s-ecrans","s-coucher","s-sport","w-reveil","w-premiere","w-derniere","w-coucher"];
+function collecter(){
+  const horaires = {};
+  IDS_HORAIRES.forEach(id=>horaires[id]=document.getElementById(id).value);
+  return { prenom:etat.prenom, objectif:etat.objectif, reponses:etat.reponses, horaires, coach:etat.coach, mesures:etat.mesures, date:new Date().toISOString() };
+}
+async function sauvegarder(){
+  if(!cibleUserId) return;
+  const { error } = await sb.from("bilans").upsert({ user_id: cibleUserId, data: collecter() });
+  if(!error){
+    const b = document.getElementById("badgeSauv");
+    b.style.display = "inline";
+    clearTimeout(b._t); b._t = setTimeout(()=>b.style.display="none", 1800);
+  } else console.error(error);
+}
+let timerSauv = null;
+function planifierSauvegarde(){ if(modeCoach) return; clearTimeout(timerSauv); timerSauv = setTimeout(sauvegarder, 600); }
+function bilanComplet(){
+  return ["physique","mental","habitudes"].every(s=>Object.keys(etat.reponses[s]).length===QUESTIONS[s].length);
+}
+function prochainEcran(){
+  for(const [sec,ecr] of [["physique","ecran-physique"],["mental","ecran-mental"],["habitudes","ecran-habitudes"]])
+    if(Object.keys(etat.reponses[sec]).length < QUESTIONS[sec].length) return ecr;
+  return "ecran-horaires";
+}
+function restaurer(d){
+  etat.prenom = d.prenom || "";
+  etat.objectif = d.objectif || "";
+  etat.reponses = d.reponses || {physique:{},mental:{},habitudes:{}};
+  etat.coach = {...COACH_DEFAUT, ...(d.coach||{})};
+  etat.mesures = {...MESURES_DEFAUT, ...(d.mesures||{})};
+  if(!Array.isArray(etat.mesures.entrees)) etat.mesures.entrees = [];
+  majSuivi();
+  document.getElementById("prenom").value = etat.prenom;
+  document.querySelectorAll("#objectifs .choice").forEach(b=>b.classList.toggle("sel", b.dataset.obj===etat.objectif));
+  if(d.horaires) Object.entries(d.horaires).forEach(([id,v])=>{ const el=document.getElementById(id); if(el && v!==undefined) el.value=v; });
+  ["physique","mental","habitudes"].forEach(sec=>{
+    const rows = document.querySelectorAll(`#qs-${sec} .q`);
+    Object.entries(etat.reponses[sec]).forEach(([i,val])=>{
+      const btns = rows[i] ? rows[i].querySelectorAll("button") : null;
+      if(btns){ btns[val===1?0:1].classList.add("sel"); btns[val===1?1:0].classList.remove("sel"); }
+    });
+    majBouton(sec);
+  });
+  checkStart();
+}
+const ECRANS = ["ecran-accueil","ecran-physique","ecran-mental","ecran-habitudes","ecran-horaires","ecran-resultats"];
+const LABELS = ["Accueil","Test 1 · Physique","Test 1 · Mental","Test 1 · Habitudes","Test 2 · Horaires","Diagnostic"];
+
+let ecranPrecedent = "ecran-accueil";
+function go(id){
+  const actuel = document.querySelector(".screen.active");
+  if(actuel && actuel.id!=="ecran-suivi") ecranPrecedent = actuel.id;
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  const i = ECRANS.indexOf(id);
+  if(i>=0){
+    document.querySelectorAll("#progSteps span").forEach((s,j)=>s.classList.toggle("on", j<=i));
+    document.getElementById("progTxt").textContent = LABELS[i];
+  } else {
+    document.getElementById("progTxt").textContent = id === "ecran-login" ? "Connexion" : "Suivi hebdomadaire";
+  }
+  document.querySelector(".prog").style.display = id === "ecran-login" ? "none" : "";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+document.getElementById("btnSuiviAccueil").addEventListener("click",()=>go("ecran-suivi"));
+document.getElementById("btnSuiviResultats").addEventListener("click",()=>go("ecran-suivi"));
+document.getElementById("btnSuiviRetour").addEventListener("click",()=>{
+  if(ecranPrecedent==="ecran-resultats" && bilanComplet()) afficherResultats(true);
+  go(ecranPrecedent);
+});
+
+/* ══════════ ACCUEIL ══════════ */
+const btnStart = document.getElementById("btnStart");
+function checkStart(){
+  etat.prenom = document.getElementById("prenom").value.trim();
+  btnStart.disabled = !(etat.prenom && etat.objectif);
+}
+document.getElementById("prenom").addEventListener("input", ()=>{ checkStart(); planifierSauvegarde(); });
+document.querySelectorAll("#objectifs .choice").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll("#objectifs .choice").forEach(x=>x.classList.remove("sel"));
+    b.classList.add("sel");
+    etat.objectif = b.dataset.obj;
+    checkStart();
+    planifierSauvegarde();
+  });
+});
+btnStart.addEventListener("click",()=>go("ecran-physique"));
+
+/* ══════════ RENDU DES QUESTIONS ══════════ */
+function rendreSection(section, containerId){
+  const c = document.getElementById(containerId);
+  QUESTIONS[section].forEach((txt,i)=>{
+    const row = document.createElement("div");
+    row.className = "q";
+    row.innerHTML = `<p>${txt}</p>
+      <div class="yn">
+        <button class="oui" aria-label="Oui">Oui</button>
+        <button class="non" aria-label="Non">Non</button>
+      </div>`;
+    const [bOui,bNon] = row.querySelectorAll("button");
+    bOui.addEventListener("click",()=>{ etat.reponses[section][i]=1; bOui.classList.add("sel"); bNon.classList.remove("sel"); majBouton(section); });
+    bNon.addEventListener("click",()=>{ etat.reponses[section][i]=0; bNon.classList.add("sel"); bOui.classList.remove("sel"); majBouton(section); });
+    c.appendChild(row);
+  });
+}
+function majBouton(section){
+  const total = QUESTIONS[section].length;
+  const done = Object.keys(etat.reponses[section]).length;
+  const ecran = {physique:"ecran-physique",mental:"ecran-mental",habitudes:"ecran-habitudes"}[section];
+  const btn = document.querySelector(`#${ecran} .btn`);
+  btn.disabled = done < total;
+  btn.textContent = done < total ? `Continuer (${done}/${total})` : "Continuer";
+  planifierSauvegarde();
+}
+rendreSection("physique","qs-physique");
+rendreSection("mental","qs-mental");
+rendreSection("habitudes","qs-habitudes");
+document.querySelectorAll("[data-next]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.next)));
+
+/* ══════════ OUTILS TEMPS ══════════ */
+const toMin = t => { const [h,m]=t.split(":").map(Number); return h*60+m; };
+const norm = m => ((m%1440)+1440)%1440;
+const fmtH = m => { m=norm(Math.round(m)); const h=Math.floor(m/60), mn=m%60; return `${h} h${mn?" "+String(mn).padStart(2,"0"):""}`; };
+const fmtDur = m => { const h=Math.floor(m/60), mn=Math.round(m%60); return mn? `${h} h ${String(mn).padStart(2,"0")}` : `${h} h`; };
+const diffCirc = (a,b)=>{ const d=Math.abs(a-b)%1440; return Math.min(d,1440-d); };
+const span = (debut,fin)=> norm(fin-debut); // durée debut→fin dans le sens horaire
+
+/* ══════════ CALCUL & AFFICHAGE RÉSULTATS ══════════ */
+document.getElementById("btnResultats").addEventListener("click", ()=>afficherResultats());
+document.getElementById("btnRefaire").addEventListener("click",()=>location.reload());
+document.getElementById("ecran-horaires").addEventListener("change", planifierSauvegarde);
+
+function afficherResultats(rerendu){
+  const somme = s => Object.values(etat.reponses[s]).reduce((a,b)=>a+b,0);
+  const sPhy = somme("physique"), sMen = somme("mental"), sHab = somme("habitudes");
+  const R = etat.reponses.habitudes; // accès direct aux habitudes par index
+
+  // Horaires
+  const t = {
+    sReveil: toMin(document.getElementById("s-reveil").value),
+    sPremiere: toMin(document.getElementById("s-premiere").value),
+    sDerniere: toMin(document.getElementById("s-derniere").value),
+    sEcrans: toMin(document.getElementById("s-ecrans").value),
+    sCoucher: toMin(document.getElementById("s-coucher").value),
+    wReveil: toMin(document.getElementById("w-reveil").value),
+    wPremiere: toMin(document.getElementById("w-premiere").value),
+    wDerniere: toMin(document.getElementById("w-derniere").value),
+    wCoucher: toMin(document.getElementById("w-coucher").value)
+  };
+  const alarme = document.getElementById("s-alarme").value === "oui";
+  const sportMoment = document.getElementById("s-sport").value;
+
+  // Chiffres circadiens (méthode du livre : première la plus tôt → dernière la plus tard)
+  const premiereTot = (span(t.sPremiere, t.wPremiere) <= 720) ? t.sPremiere : t.wPremiere;
+  const derniereTard = (span(t.sDerniere, t.wDerniere) <= 720) ? t.wDerniere : t.sDerniere;
+  const fenetre = span(premiereTot, derniereTard);
+  const sommeilSem = span(t.sCoucher, t.sReveil);
+  const ecartDinerCoucher = span(t.sDerniere, t.sCoucher);
+  const jetlag = Math.max(
+    diffCirc(t.sReveil,t.wReveil), diffCirc(t.sPremiere,t.wPremiere),
+    diffCirc(t.sDerniere,t.wDerniere), diffCirc(t.sCoucher,t.wCoucher)
+  );
+
+  // Fenêtre cible selon objectif
+  const cibles = {perte:{h:9,txt:"8–9 h"}, perf:{h:10,txt:"10 h"}, sante:{h:11,txt:"11–12 h"}};
+  const cible = cibles[etat.objectif] || cibles.sante;
+
+  // Fenêtre cible positionnée : ancrée sur la première bouchée de semaine, fin ≥3h avant coucher
+  let cibleDebut = t.sPremiere;
+  let cibleFin = norm(cibleDebut + cible.h*60);
+  const finMax = norm(t.sCoucher - 180);
+  if (span(cibleDebut, cibleFin) > span(cibleDebut, finMax)) {
+    cibleFin = finMax;
+    cibleDebut = norm(cibleFin - cible.h*60);
+  }
+
+  // Titre
+  document.getElementById("titreResultats").innerHTML = `${esc(etat.prenom)}, voici ton <em>code circadien</em>`;
+  document.getElementById("titrePlan").textContent = `Ton plan personnalisé, ${etat.prenom}`;
+
+  // Scores
+  const grid = document.getElementById("scoreGrid");
+  grid.innerHTML = "";
+  [["Physique",sPhy,15,sPhy>=3],["Mental",sMen,15,sMen>=3],["Habitudes",sHab,15,sHab>=5]].forEach(([nom,val,max,alerte])=>{
+    grid.innerHTML += `<div class="score ${alerte?"alerte":(val<=1?"ok":"")}"><b>${val}<span style="font-size:14px;color:var(--gris)">/${max}</span></b><span>${nom}</span></div>`;
+  });
+
+  // Verdicts test 1
+  const v1 = document.getElementById("verdictsTest1");
+  v1.innerHTML = "";
+  const verdict = (niveau, txt)=> v1.innerHTML += `<div class="verdict"><span class="dot ${niveau}"></span><span>${txt}</span></div>`;
+  if (sPhy>=3) verdict("r",`<b>${sPhy} « oui » côté physique.</b> Selon le Dr Panda, 3 ou plus dans cette section indique un rythme circadien probablement non optimal. Bonne nouvelle : ces symptômes sont justement ceux qui répondent le mieux au protocole.`);
+  else verdict("v",`Côté physique (${sPhy}/15), tu es dans la norme du livre — 1 à 2 « oui » sont courants.`);
+  if (sMen>=3) verdict("r",`<b>${sMen} « oui » côté mental et énergie.</b> Là aussi, 3 ou plus = signe d'un rythme désynchronisé. Concentration, humeur et fringales s'améliorent typiquement en 2 à 4 semaines de protocole.`);
+  else verdict("v",`Côté mental et énergie (${sMen}/15), rien d'alarmant.`);
+  verdict(sHab>=5?"r":(sHab>=1?"o":"v"),
+    sHab===0 ? "Aucune habitude perturbatrice détectée — rare et excellent." :
+    `<b>${sHab} habitude${sHab>1?"s":""} qui perturbe${sHab>1?"nt":""} ton horloge.</b> Chacune est un levier concret : le plan ci-dessous les traite une par une.`);
+
+  // KPIs
+  const k = document.getElementById("kpis");
+  const kpi = (nom,val,ok,cibleTxt)=>`<div class="kpi"><span>${nom}<br><span class="muted">${cibleTxt}</span></span><b class="${ok?"good":"bad"}">${val}</b></div>`;
+  k.innerHTML =
+    kpi("Fenêtre alimentaire", fmtDur(fenetre), fenetre<=720, "Objectif du livre : ≤ 12 h (optimal 8–11 h)") +
+    kpi("Dernière bouchée → coucher", fmtDur(ecartDinerCoucher), ecartDinerCoucher>=180, "Objectif : ≥ 3 h") +
+    kpi("Sommeil (semaine)", fmtDur(sommeilSem), sommeilSem>=420, "Objectif : ≥ 7 h") +
+    kpi("Jetlag social (écart semaine/week-end)", fmtDur(jetlag), jetlag<120, "Objectif : < 2 h — décaler de 3 h = un vol Los Angeles → New York pour ton corps");
+
+  // Fenêtre du coach (cas particulier) → horaires appliqués dans le plan
+  const coachActif = !!etat.coach.actif;
+  const coachDebut = coachActif ? toMin(etat.coach.debut) : null;
+  const coachFin   = coachActif ? toMin(etat.coach.fin)   : null;
+  const debutApp = coachActif ? coachDebut : cibleDebut;
+  const finApp   = coachActif ? coachFin   : cibleFin;
+  document.getElementById("legCoach").style.display = coachActif ? "inline" : "none";
+
+  // Cadran SVG
+  dessinerCadran(t, premiereTot, derniereTard, cibleDebut, cibleFin, sportMoment, coachDebut, coachFin);
+  rendreCoach({cibleTxt:cible.txt, cibleDebut, cibleFin});
+
+  /* ── RECO 1 : TRE ── */
+  const recoTRE = document.getElementById("recoTRE");
+  let html = "";
+  const objTxt = {perte:"perte de poids", perf:"performance", sante:"santé et sommeil"}[etat.objectif];
+  html += `<p style="font-size:15px">Objectif <b>${objTxt}</b> → fenêtre cible : <b>${cible.txt}</b>, soit <span class="horaire">${fmtH(cibleDebut)} → ${fmtH(cibleFin)}</span> (première gorgée de café comprise, dernière bouchée 3 h avant ton coucher).</p>`;
+  if (fenetre > cible.h*60){
+    const paliers = [];
+    let f = Math.min(12, Math.floor(fenetre/60));
+    paliers.push(`Sem. 1–2 : ${f} h`);
+    let s = 3;
+    for(let hh=f-1; hh>=cible.h; hh--){ paliers.push(`Sem. ${s} : ${hh} h`); s++; }
+    html += `<p style="font-size:15px;margin-top:10px">Ta fenêtre actuelle est de <b>${fmtDur(fenetre)}</b>. Le livre prescrit une réduction d'<b>1 h par semaine</b> — les bénéfices doublent à chaque heure gagnée entre 12 h et 8 h :</p>
+    <div class="plan-sem">${paliers.map(p=>`<span>${p}</span>`).join("")}</div>`;
+  } else {
+    html += `<p style="font-size:15px;margin-top:10px">Ta fenêtre actuelle (${fmtDur(fenetre)}) est déjà dans la cible — ton chantier est la <b>régularité</b> : même fenêtre à ±30 min tous les jours, week-end compris.</p>`;
+  }
+  if (etat.objectif==="perte") html += `<p class="muted" style="margin-top:10px">Mécanisme : la combustion des graisses démarre 6–8 h après le dernier repas et augmente quasi exponentiellement après 12 h de jeûne. Une fois ton poids cible atteint, tu repasses à 11–12 h pour le maintenir.</p>`;
+  html += `<p class="muted" style="margin-top:8px">Règle du week-end : sortir de sa fenêtre 3 fois par semaine = ne plus faire de TRE. Un écart occasionnel (soirée) : tu reprends normalement le lendemain.</p>`;
+  recoTRE.innerHTML = html;
+
+  /* ── RECO 2 : NUTRITION ── */
+  const nut = document.getElementById("recoNutrition");
+  nut.innerHTML = "";
+  const li = (ul,txt,warn)=>{ const l=document.createElement("li"); if(warn)l.className="warn"; l.innerHTML=txt; ul.appendChild(l); };
+  if (coachActif) li(nut,`<b>Ta fenêtre appliquée : <span class="horaire">${fmtH(debutApp)} → ${fmtH(finApp)}</span></b> (${fmtDur(span(debutApp,finApp))}, ajustée par ton coach). Les horaires ci-dessous en tiennent compte.`);
+  li(nut,`<b>Petit-déjeuner copieux vers <span class="horaire">${fmtH(debutApp)}</span></b> : fibres + protéines + bonnes graisses (ex. du livre : flocons d'avoine, cottage cheese, poudre d'amande, cranberries). La réponse à l'insuline est meilleure en première moitié de journée ; les protéines le matin = satiété 4–6 h et moins de reflux le soir.`);
+  li(nut,`<b>Déjeuner léger</b> (salade, soupe) pour éviter la léthargie de l'après-midi.`);
+  li(nut,`<b>Dîner : protéines + légumes + bonnes graisses, peu de glucides simples</b> — le contrôle glycémique est faible le soir, les glucides du dîner partent en graisse. Fin du repas au plus tard à <span class="horaire">${fmtH(finApp)}</span>.`);
+  if (ecartDinerCoucher < 180) li(nut,`<b>Ton écart dernière bouchée → coucher est de ${fmtDur(ecartDinerCoucher)}.</b> Trop court : il faut ≥ 3 h pour que le corps refroidisse (−0,5 °C nécessaire au sommeil profond) et échappe à l'interférence mélatonine/glycémie. Avance ton dîner ou recule légèrement ton coucher.`, true);
+  if (R[4]===1) li(nut,`<b>Alcool : avant ou pendant le dîner, jamais après.</b> « Une gorgée = une bouchée » : le verre d'après-dîner repousse ta fenêtre et fragmente ton sommeil.`, true);
+  if (R[6]===1) li(nut,`<b>Caféine : stop après midi.</b> Le café reste jusqu'à 10 h dans ton système. Ton coup de barre de l'après-midi est souvent de la déshydratation : commence par un verre d'eau.`, true);
+  if (R[8]===1 || R[9]===1) li(nut,`<b>Le grignotage du soir est ton levier n°1</b> : manger tard est, selon le livre, « le pire choix possible » — il annule les bénéfices de la journée. Faim du soir les 2–4 premières semaines : un verre d'eau, ça passe.`, true);
+  if (R[5]===1) li(nut,`<b>Hydratation</b> : un verre d'eau toutes les 1–2 h. L'eau (et les tisanes sans caféine, sans sucre, sans lait) ne casse jamais ta fenêtre, même après le dîner.`);
+  li(nut,`Grignoter en journée : ok si c'est sain. Le dentifrice ne compte pas. La 1<sup>re</sup> gorgée de café crème, si.`);
+
+  /* ── RECO 3 : SPORT ── */
+  const spo = document.getElementById("recoSport");
+  spo.innerHTML = "";
+  const finAerobie = Math.min(span(t.sReveil, debutApp), 120);
+  li(spo,`<b>Matin (${fmtH(t.sReveil)} → ${fmtH(norm(t.sReveil+Math.max(finAerobie,45)))}) — cardio à jeun, dehors.</b> Après 10–12 h de jeûne nocturne, marche rapide, course modérée ou vélo puisent directement dans les graisses stockées. La lumière du jour (800–1 000 lux même sous les nuages) synchronise ton horloge cérébrale. Réserve : pas d'effort maximal ni de sport intense à jeun.`);
+  li(spo,`<b>Fin d'après-midi (15 h → dîner) — force et intensité.</b> Pic de tonus musculaire, de coordination et d'oxygénation : c'est LE créneau pour la musculation lourde et le HIIT (la performance varie jusqu'à 25 % dans la journée, pic vers 18 h). Enchaîne avec un dîner riche en protéines pour la récupération. Bonus : l'exercice réduit l'appétit du dîner et fait capter le glucose aux muscles sans insuline.`);
+  if (sportMoment==="soir" || R[2]===1) li(spo,`<b>Tu t'entraînes après 21 h : à déplacer.</b> L'intensité tardive fait remonter le cortisol à des niveaux matinaux, élève la température et retarde la mélatonine → endormissement décalé. Si aucun autre créneau n'est possible : loin des lumières vives + douche avant le coucher pour refroidir le corps. Après le dîner, seule une marche digestive est recommandée (elle limite même le pic glycémique).`, true);
+  else if (sportMoment==="aprem") li(spo,`Ton créneau actuel (15 h → dîner) est déjà l'optimal du livre — garde-le. Si la grosse séance pousse ton dîner à 20 h : ok, « l'exercice absout quelques péchés », passe simplement sur une fenêtre de 10 h ce jour-là.`);
+  else if (sportMoment==="matin") li(spo,`Ton entraînement à jeun du matin est exactement le combo « jeûne + sport » du livre pour maximiser la combustion des graisses. Garde les efforts maximaux pour la fin d'après-midi.`);
+  li(spo,`Pas de bloc de 30–45 min ? <b>2–3 segments de 10–15 min donnent les mêmes bénéfices</b> — et le duo matin + fin d'après-midi est le pattern qui renforce le plus le rythme circadien.`);
+
+  /* ── RECO 4 : LUMIÈRE & SOMMEIL ── */
+  const som = document.getElementById("recoSommeil");
+  som.innerHTML = "";
+  if (sommeilSem < 420) li(som,`<b>Tu dors ${fmtDur(sommeilSem)} en semaine.</b> Premier chantier du livre sous 7 h : coucher plus tôt ou gagner au moins 30 min de sommeil le matin. 3 nuits courtes sur 7 suffisent à ruiner le reste des efforts.`, true);
+  else li(som,`Ton volume de sommeil en semaine (${fmtDur(sommeilSem)}) tient l'objectif de ≥ 7 h.`);
+  if (alarme || R[12]===1) li(som,`<b>Tu as besoin d'un réveil</b> : signe que ton horloge maîtresse (le SCN) pense encore qu'il fait nuit. L'objectif final du protocole : te réveiller seul, spontanément.`, true);
+  if (jetlag >= 120) li(som,`<b>Jetlag social de ${fmtDur(jetlag)}.</b> Tes horaires de week-end décalent ton horloge comme un vol transatlantique hebdomadaire. Vise le même réveil et la même fenêtre à ±1 h maximum, 7 j/7.`, true);
+  if (R[1]===1) li(som,`<b>≥ 1 h de lumière du jour, idéalement le matin</b> (≥ 1 000 lux : dehors, en voiture, collé à une fenêtre — à 2 m de la fenêtre, on tombe déjà à 500 lux). Petit-déj près de la fenêtre, trajets à pied.`, true);
+  else li(som,`Continue ta dose quotidienne de lumière du jour — c'est elle qui cale l'horloge, l'humeur et la vigilance.`);
+  if (R[3]===1) li(som,`<b>Écrans : mode nuit/orange 2–3 h avant le coucher</b>, extinction visée à ${fmtH(norm(t.sCoucher-60))}. 1–2 h d'écran standard le soir suffisent à supprimer la mélatonine. Le soir : éclairage d'appoint plutôt que plafonnier ; veilleuses rouges si besoin.`, true);
+  if (R[10]===1) li(som,`<b>Dormir dans le noir complet</b> — la lumière pendant le sommeil perturbe l'horloge. Si une veilleuse est indispensable : rouge, la couleur qui contient le moins de bleu.`, true);
+  li(som,`Réduis la lumière bleue sur 8–9 h autour de ton sommeil : lumière forte le jour, faible la nuit — c'est la règle qui résume tout le chapitre.`);
+
+  if(!modeCoach) sauvegarder();
+  if(!rerendu) go("ecran-resultats");
+}
+
+/* ══════════ CADRAN 24 H (SVG) ══════════ */
+function dessinerCadran(t, mangeDebut, mangeFin, cibleDebut, cibleFin, sportMoment, coachDebut, coachFin){
+  const C=160, R1=118, R2=97, R3=78, R4=60; // centre, rayons : sommeil, fenêtre, cible, coach
+  const pt = (r,min)=>{ const a=(min/1440)*2*Math.PI - Math.PI/2; return [C+r*Math.cos(a), C+r*Math.sin(a)]; };
+  function arc(r, d, f, couleur, w, dash){
+    const dur = norm(f-d); if(dur<5) return "";
+    const [x1,y1]=pt(r,d), [x2,y2]=pt(r,f);
+    const large = dur>720 ? 1 : 0;
+    return `<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="${couleur}" stroke-width="${w}" stroke-linecap="round" ${dash?`stroke-dasharray="${dash}"`:""}/>`;
+  }
+  let ticks = "";
+  for(let h=0;h<24;h++){
+    const maj = h%6===0;
+    const [x1,y1]=pt(132,h*60), [x2,y2]=pt(maj?124:128,h*60);
+    ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#CFCBBE" stroke-width="${maj?2:1}"/>`;
+    if(maj){ const [tx,ty]=pt(146,h*60); ticks += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#8B8B84" font-family="Outfit,sans-serif">${h}h</text>`; }
+  }
+  let sport = "";
+  const sportPos = {matin:norm(t.sReveil+45),"matin-apres":norm(t.sPremiere+90),midi:750,aprem:1020,soir:norm(t.sDerniere+60)};
+  if(sportMoment && sportPos[sportMoment]!==undefined){
+    const [sx,sy]=pt(R2, sportPos[sportMoment]);
+    sport = `<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="7" fill="#fff" stroke="#12203A" stroke-width="2.5"/><text x="${sx.toFixed(1)}" y="${(sy+1).toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="8" fill="#12203A" font-weight="700" font-family="Outfit">S</text>`;
+  }
+  const svg = `
+  <svg viewBox="0 0 320 320" width="100%" style="max-width:320px" role="img" aria-label="Cadran 24 heures : sommeil, fenêtre alimentaire actuelle, fenêtre cible et fenêtre du coach">
+    <circle cx="${C}" cy="${C}" r="${R1}" fill="none" stroke="#F0EDE4" stroke-width="10"/>
+    <circle cx="${C}" cy="${C}" r="${R2}" fill="none" stroke="#F0EDE4" stroke-width="10"/>
+    <circle cx="${C}" cy="${C}" r="${R3}" fill="none" stroke="#F5F3EC" stroke-width="8"/>
+    ${coachDebut!=null ? `<circle cx="${C}" cy="${C}" r="${R4}" fill="none" stroke="#F5F3EC" stroke-width="8"/>` : ""}
+    ${arc(R1, t.sCoucher, t.sReveil, "#12203A", 10)}
+    ${arc(R2, mangeDebut, mangeFin, "#C98A1B", 10)}
+    ${arc(R3, cibleDebut, cibleFin, "#3E7C5B", 8, "1 9")}
+    ${coachDebut!=null ? arc(R4, coachDebut, coachFin, "#6F94B4", 8) : ""}
+    ${ticks}
+    ${sport}
+    <text x="${C}" y="${C-8}" text-anchor="middle" font-family="Fraunces,serif" font-size="15" fill="#171A21">24 h</text>
+    <text x="${C}" y="${C+12}" text-anchor="middle" font-family="Outfit" font-size="10.5" fill="#8B8B84">S = ta séance de sport</text>
+  </svg>`;
+  document.getElementById("cadran").innerHTML = svg;
+}
+
+/* ══════════ AJUSTEMENT COACH DE LA FENÊTRE ══════════
+   Visible en édition uniquement quand un coach authentifié consulte
+   le bilan d'un client (modeCoach = true). Le client ne voit qu'un
+   rendu en lecture seule (rendreCoach). */
+function remplirCoachEdit(){
+  const c = etat.coach;
+  document.getElementById("c-actif").value = c.actif ? "oui" : "non";
+  document.getElementById("c-debut").value = c.debut;
+  document.getElementById("c-fin").value = c.fin;
+  document.getElementById("c-motif").value = c.motif || "";
+  majCoachChamps();
+}
+function majCoachChamps(){
+  const actif = document.getElementById("c-actif").value==="oui";
+  document.getElementById("coachChamps").style.display = actif ? "block" : "none";
+  const d = toMin(document.getElementById("c-debut").value), f = toMin(document.getElementById("c-fin").value);
+  document.getElementById("c-duree").textContent = `Fenêtre de ${fmtDur(span(d,f))} · ${fmtH(d)} → ${fmtH(f)}`;
+}
+document.getElementById("c-actif").addEventListener("change", majCoachChamps);
+document.getElementById("c-debut").addEventListener("change", majCoachChamps);
+document.getElementById("c-fin").addEventListener("change", majCoachChamps);
+document.getElementById("btnCoachSave").addEventListener("click", async ()=>{
+  etat.coach.actif = document.getElementById("c-actif").value==="oui";
+  etat.coach.debut = document.getElementById("c-debut").value || "08:00";
+  etat.coach.fin   = document.getElementById("c-fin").value   || "18:00";
+  etat.coach.motif = document.getElementById("c-motif").value.trim();
+  await sauvegarder();
+  if(bilanComplet()) afficherResultats(true);
+});
+function rendreCoach(ctx){
+  const vue = document.getElementById("coachVue");
+  const c = etat.coach;
+  if(!c.actif){ vue.innerHTML = `<p class="muted" style="margin-top:10px">Aucun ajustement pour l'instant — tu suis la fenêtre du protocole.</p>`; return; }
+  const d = toMin(c.debut), f = toMin(c.fin);
+  vue.innerHTML = `
+    <div class="compare">
+      <div><span class="muted">Protocole (référence)</span><b>${ctx.cibleTxt}</b><span>${fmtH(ctx.cibleDebut)} → ${fmtH(ctx.cibleFin)}</span></div>
+      <div class="actif"><span class="muted">Fixée par ton coach</span><b>${fmtDur(span(d,f))}</b><span>${fmtH(d)} → ${fmtH(f)}</span></div>
+    </div>
+    ${c.motif ? `<div class="motif">${esc(c.motif)}</div>` : ""}
+    <p class="muted">C'est la fenêtre bleue que tu appliques. Le protocole reste la cible vers laquelle on revient quand ton cas particulier ne s'applique plus.</p>`;
+}
+
+/* ══════════ SUIVI : POIDS & TOUR DE TAILLE ══════════ */
+const catIMC = v => v<18.5 ? ["Insuffisance","o"] : v<25 ? ["Normal","v"] : v<30 ? ["Surpoids","o"] : v<35 ? ["Obésité I","r"] : v<40 ? ["Obésité II","r"] : ["Obésité III","r"];
+function catTour(v, sexe){
+  const [s1,s2] = sexe==="f" ? [80,88] : [94,102];
+  return v<s1 ? [`< ${s1} — ok`,"v"] : v<s2 ? [`${s1}–${s2} — risque accru`,"o"] : [`≥ ${s2} — risque élevé`,"r"];
+}
+const catRTH = v => v<0.5 ? ["< 0,5 — ok","v"] : v<0.6 ? ["0,5–0,6 — à réduire","o"] : ["≥ 0,6 — élevé","r"];
+const fmtKg = v => v.toFixed(1).replace(".",",");
+const fmtCm = v => (Math.round(v*2)/2).toString().replace(".",",");
+const fmtDate = iso => { const [y,m,d]=iso.split("-"); return new Date(+y,+m-1,+d).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}); };
+const signe = (v,u) => (v>0?"+":v<0?"−":"±")+Math.abs(v).toFixed(1).replace(".",",")+" "+u;
+
+function checkMesure(){
+  const p = parseFloat(document.getElementById("m-poids").value), t = parseFloat(document.getElementById("m-tour").value);
+  document.getElementById("btnMesure").disabled = !(document.getElementById("m-date").value && p>0 && t>0);
+}
+["m-poids","m-tour","m-date"].forEach(id=>document.getElementById(id).addEventListener("input", checkMesure));
+document.getElementById("m-taille").addEventListener("change", ()=>{ const v=parseFloat(document.getElementById("m-taille").value); etat.mesures.taille = v>0 ? v : null; sauvegarder(); majSuivi(); });
+document.getElementById("m-sexe").addEventListener("change", ()=>{ etat.mesures.sexe = document.getElementById("m-sexe").value; sauvegarder(); majSuivi(); });
+document.getElementById("btnMesure").addEventListener("click", ()=>{
+  const date = document.getElementById("m-date").value;
+  const poids = parseFloat(document.getElementById("m-poids").value), tour = parseFloat(document.getElementById("m-tour").value);
+  etat.mesures.entrees = etat.mesures.entrees.filter(e=>e.date!==date);
+  etat.mesures.entrees.push({date, poids, tour});
+  document.getElementById("m-poids").value = ""; document.getElementById("m-tour").value = "";
+  checkMesure(); sauvegarder(); majSuivi();
+});
+function supprimerMesure(date){
+  if(!confirm(`Supprimer la mesure du ${fmtDate(date)} ?`)) return;
+  etat.mesures.entrees = etat.mesures.entrees.filter(e=>e.date!==date);
+  sauvegarder(); majSuivi();
+}
+
+document.getElementById("btnCiblesSave").addEventListener("click", async ()=>{
+  const p = parseFloat(document.getElementById("c-poids").value), t = parseFloat(document.getElementById("c-tour").value);
+  etat.coach.poidsCible = p>0 ? p : null;
+  etat.coach.tourCible  = t>0 ? t : null;
+  await sauvegarder(); majSuivi();
+});
+
+function majSuivi(){
+  const m = etat.mesures, c = etat.coach;
+  if(m.taille) document.getElementById("m-taille").value = m.taille;
+  document.getElementById("m-sexe").value = m.sexe || "h";
+  if(modeCoach){
+    document.getElementById("c-poids").value = c.poidsCible ?? "";
+    document.getElementById("c-tour").value  = c.tourCible ?? "";
+  }
+
+  // Objectifs coach (vue)
+  const cv = document.getElementById("ciblesVue");
+  cv.innerHTML = (c.poidsCible || c.tourCible)
+    ? `<div class="compare"><div class="actif"><span class="muted">Poids cible</span><b>${c.poidsCible ? fmtKg(c.poidsCible)+" kg" : "—"}</b></div><div class="actif"><span class="muted">Tour de taille cible</span><b>${c.tourCible ? fmtCm(c.tourCible)+" cm" : "—"}</b></div></div>`
+    : `<p class="muted" style="margin-top:10px">Aucun objectif chiffré pour l'instant.</p>`;
+
+  const box = document.getElementById("suiviBilan");
+  const entrees = [...m.entrees].sort((a,b)=>a.date.localeCompare(b.date));
+  if(!entrees.length){
+    box.innerHTML = `<div class="carte"><p class="muted">Aucune mesure enregistrée. La première mesure devient ton point de référence : tout le suivi se lit par rapport à elle.</p></div>`;
+    return;
+  }
+  const prem = entrees[0], der = entrees[entrees.length-1];
+  const sexe = m.sexe || "h";
+  let html = "";
+
+  // Trois indicateurs du jour
+  const imc = m.taille ? der.poids/((m.taille/100)**2) : null;
+  const rth = m.taille ? der.tour/m.taille : null;
+  const tc = catTour(der.tour, sexe);
+  const carte = (val, unite, nom, cat) => `<div class="score mesure"><b>${val}<span style="font-size:13px;color:var(--gris)"> ${unite}</span></b><span>${nom}</span>${cat?`<span class="pill ${cat[1]}">${cat[0]}</span>`:""}</div>`;
+  html += `<h3 style="margin:22px 0 4px">Où tu en es <span class="muted" style="font-weight:400">· ${fmtDate(der.date)}</span></h3>
+  <div class="score-grid">
+    ${carte(fmtCm(der.tour),"cm","Tour de taille",tc)}
+    ${carte(imc ? imc.toFixed(1).replace(".",",") : "—","","IMC", imc ? catIMC(imc) : ["Renseigne ta taille","g"])}
+    ${carte(rth ? rth.toFixed(2).replace(".",",") : "—","","Taille / hauteur", rth ? catRTH(rth) : ["Renseigne ta taille","g"])}
+  </div>`;
+
+  // Évolution depuis le départ + reste à faire
+  if(entrees.length>1 || c.poidsCible || c.tourCible){
+    const ligne = (nom, val, cls, sous) => `<div class="delta"><span>${nom}${sous?`<br><span class="muted">${sous}</span>`:""}</span><b class="${cls}">${val}</b></div>`;
+    html += `<div class="carte" style="margin-top:12px">`;
+    if(entrees.length>1){
+      const dP = der.poids-prem.poids, dT = der.tour-prem.tour;
+      const nbJ = Math.round((new Date(der.date)-new Date(prem.date))/86400000);
+      html += ligne("Poids depuis le départ", signe(dP,"kg"), dP<0?"down":dP>0?"up":"", `${fmtKg(prem.poids)} → ${fmtKg(der.poids)} kg · ${nbJ} jours`);
+      html += ligne("Tour de taille depuis le départ", signe(dT,"cm"), dT<0?"down":dT>0?"up":"", `${fmtCm(prem.tour)} → ${fmtCm(der.tour)} cm`);
+    }
+    if(c.poidsCible) html += ligne("Reste jusqu'au poids cible", signe(c.poidsCible-der.poids,"kg"), der.poids<=c.poidsCible?"down":"", `Cible : ${fmtKg(c.poidsCible)} kg`);
+    if(c.tourCible)  html += ligne("Reste jusqu'au tour de taille cible", signe(c.tourCible-der.tour,"cm"), der.tour<=c.tourCible?"down":"", `Cible : ${fmtCm(c.tourCible)} cm`);
+    html += `</div>`;
+  }
+
+  // Courbes
+  if(entrees.length>1){
+    html += `<div class="carte graph-box">${dessinerCourbes(entrees, c)}</div>`;
+  }
+
+  // Historique
+  html += `<div class="carte"><h3>Historique</h3>${[...entrees].reverse().map(e=>`
+    <div class="hist"><span>${fmtDate(e.date)}</span><span><b>${fmtKg(e.poids)}</b> kg</span><span><b>${fmtCm(e.tour)}</b> cm</span>${modeCoach?"":`<button aria-label="Supprimer" data-del="${e.date}">×</button>`}</div>`).join("")}</div>`;
+
+  box.innerHTML = html;
+  box.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>supprimerMesure(b.dataset.del)));
+}
+
+function dessinerCourbes(entrees, c){
+  const W=320, L=34, R=300;
+  const panneau = (nom, vals, y0, h, couleur, cible, unite, fmt) => {
+    let lo = Math.min(...vals), hi = Math.max(...vals);
+    if(cible) { lo = Math.min(lo,cible); hi = Math.max(hi,cible); }
+    if(hi-lo < 2){ hi += 1; lo -= 1; }
+    const pad = (hi-lo)*0.18; lo -= pad; hi += pad;
+    const x = i => vals.length>1 ? L + i*((R-L)/(vals.length-1)) : (L+R)/2;
+    const y = v => y0 + h - (v-lo)/(hi-lo)*h;
+    let out = `<text x="${L}" y="${y0-8}" font-family="Outfit" font-size="12" font-weight="600" fill="#171A21">${nom}</text>`;
+    out += `<line x1="${L}" y1="${y0+h}" x2="${R}" y2="${y0+h}" stroke="#E7E3D8"/>`;
+    if(cible){
+      out += `<line x1="${L}" y1="${y(cible).toFixed(1)}" x2="${R}" y2="${y(cible).toFixed(1)}" stroke="#6F94B4" stroke-width="1.5" stroke-dasharray="3 4"/>`;
+      out += `<text x="${R}" y="${(y(cible)-4).toFixed(1)}" text-anchor="end" font-family="Outfit" font-size="10.5" fill="#6F94B4">cible ${fmt(cible)} ${unite}</text>`;
+    }
+    const pts = vals.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+    out += `<polyline points="${pts}" fill="none" stroke="${couleur}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+    vals.forEach((v,i)=>{ out += `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="3.5" fill="#fff" stroke="${couleur}" stroke-width="2"/>`; });
+    const first = vals[0], last = vals[vals.length-1];
+    out += `<text x="${(x(0)-6).toFixed(1)}" y="${(y(first)+4).toFixed(1)}" text-anchor="end" font-family="Outfit" font-size="11" fill="#8B8B84">${fmt(first)}</text>`;
+    out += `<text x="${x(vals.length-1).toFixed(1)}" y="${(y(last)-9).toFixed(1)}" text-anchor="end" font-family="Fraunces,serif" font-size="13" font-weight="600" fill="${couleur}">${fmt(last)} ${unite}</text>`;
+    return out;
+  };
+  const dates = entrees.map(e=>e.date);
+  const axe = (y) => `<text x="${L}" y="${y}" font-family="Outfit" font-size="10.5" fill="#8B8B84">${fmtDate(dates[0])}</text><text x="${R}" y="${y}" text-anchor="end" font-family="Outfit" font-size="10.5" fill="#8B8B84">${fmtDate(dates[dates.length-1])}</text>`;
+  return `<svg viewBox="0 0 ${W} 270" width="100%" role="img" aria-label="Évolution du poids et du tour de taille">
+    ${panneau("Poids (kg)", entrees.map(e=>e.poids), 24, 80, "#C98A1B", c.poidsCible, "kg", fmtKg)}
+    ${axe(122)}
+    ${panneau("Tour de taille (cm)", entrees.map(e=>e.tour), 162, 80, "#12203A", c.tourCible, "cm", fmtCm)}
+    ${axe(260)}
+  </svg>`;
+}
+
+/* ══════════ ÉCRAN LOGIN ══════════ */
+document.getElementById("btnEnvoyerLien").addEventListener("click", async ()=>{
+  const email = document.getElementById("login-email").value.trim();
+  const msg = document.getElementById("loginMsg");
+  if(!email){ msg.textContent = "Indique ton adresse email."; return; }
+  const btn = document.getElementById("btnEnvoyerLien");
+  btn.disabled = true; msg.textContent = "Envoi en cours…";
+  const { error } = await envoyerLienMagique(email, window.location.href.split("?")[0].split("#")[0]);
+  btn.disabled = false;
+  msg.textContent = error ? "Erreur : " + error.message : "Lien envoyé ! Regarde ta boîte mail (et tes spams) et clique dessus.";
+});
+
+function afficherCompteBar(){
+  const bar = document.getElementById("compteBar");
+  bar.style.display = "flex";
+  bar.innerHTML = `<span>${esc(monProfil.prenom || monProfil.email)}${monProfil.role==="coach"?'<span class="badge-role">Coach</span>':""}</span><button class="lien" id="btnDeco">Se déconnecter</button>`;
+  document.getElementById("btnDeco").addEventListener("click", async ()=>{ await deconnexion(); location.href = "index.html"; });
+}
+
+function desactiverPourCoach(){
+  ["m-taille","m-sexe","m-date","m-poids","m-tour","btnMesure"].forEach(id=>document.getElementById(id).disabled = true);
+  IDS_HORAIRES.forEach(id=>{ const el=document.getElementById(id); if(el) el.disabled = true; });
+  document.getElementById("btnRefaire").style.display = "none";
+  document.getElementById("btnRetourCoach").style.display = "block";
+  document.getElementById("bandeauCoach").style.display = "block";
+  document.getElementById("bandeauCoach").textContent = `Vue coach : tu consultes le bilan de ${etat.prenom || "ce client"}. Le formulaire de test n'est pas modifiable ici — seul l'ajustement ci-dessous l'est.`;
+}
+
+/* ══════════ DÉMARRAGE DE L'APPLICATION (après connexion) ══════════ */
+async function demarrerApp(){
+  const session = await sessionActuelle();
+  if(!session){ go("ecran-login"); return; }
+
+  monUserId = session.user.id;
+  monProfil = await profilActuel();
+  if(!monProfil){ document.getElementById("loginMsg").textContent = "Impossible de charger ton profil. Réessaie."; return; }
+  afficherCompteBar();
+
+  const params = new URLSearchParams(location.search);
+  const clientParam = params.get("client");
+
+  if(monProfil.role === "coach"){
+    if(!clientParam){ location.href = "coach.html"; return; }
+    modeCoach = true;
+    cibleUserId = clientParam;
+    document.getElementById("coachEdit").style.display = "block";
+    document.getElementById("ciblesEdit").style.display = "block";
+    const d = await chargerBilan(cibleUserId);
+    if(!d || !d.prenom){
+      document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+      document.getElementById("ecran-resultats").classList.add("active");
+      document.getElementById("scoreGrid").innerHTML = "";
+      document.getElementById("verdictsTest1").innerHTML = "";
+      document.getElementById("titreResultats").textContent = "Ce client n'a pas encore de bilan";
+      document.getElementById("bandeauCoach").style.display = "block";
+      document.getElementById("bandeauCoach").innerHTML = `Aucun bilan trouvé pour ce compte pour l'instant. <a href="coach.html">← Retour à l'espace coach</a>`;
+      ["kpis","cadran","recoTRE","recoNutrition","recoSport","recoSommeil"].forEach(id=>document.getElementById(id).innerHTML="");
+      document.getElementById("carteCoach").style.display = "none";
+      return;
+    }
+    restaurer(d);
+    remplirCoachEdit();
+    desactiverPourCoach();
+    if(bilanComplet()){
+      afficherResultats(true);
+      document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+      document.getElementById("ecran-resultats").classList.add("active");
+    } else {
+      document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+      document.getElementById("ecran-resultats").classList.add("active");
+      document.getElementById("titreResultats").textContent = `${etat.prenom || "Ce client"} n'a pas terminé son bilan`;
+      document.getElementById("bandeauCoach").innerHTML = `Bilan en cours (${Object.keys(etat.reponses.physique).length+Object.keys(etat.reponses.mental).length+Object.keys(etat.reponses.habitudes).length}/45 réponses). Tu peux déjà fixer un ajustement ci-dessous si besoin. <a href="coach.html">← Retour à l'espace coach</a>`;
+    }
+  } else {
+    modeCoach = false;
+    cibleUserId = monUserId;
+    const d = await chargerBilan(monUserId);
+    if(d && d.prenom){
+      restaurer(d);
+      const complet = bilanComplet();
+      const carte = document.getElementById("carteReprise");
+      carte.style.display = "block";
+      const dateTxt = d.date ? new Date(d.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : "";
+      document.getElementById("repriseInfo").textContent = `${d.prenom} · enregistré le ${dateTxt}${complet ? "" : " · bilan en cours"}`;
+      const btnVoir = document.getElementById("btnVoirBilan");
+      btnVoir.textContent = complet ? "Revoir mon diagnostic" : "Reprendre où j'en étais";
+      btnVoir.addEventListener("click",()=>{ complet ? afficherResultats() : go(prochainEcran()); });
+      document.getElementById("btnEffacer").addEventListener("click", async ()=>{
+        if(!confirm("Effacer définitivement ton bilan enregistré ?")) return;
+        await sb.from("bilans").delete().eq("user_id", monUserId);
+        location.reload();
+      });
+    }
+    document.getElementById("m-date").value = new Date().toISOString().slice(0,10);
+    go("ecran-accueil");
+  }
+}
+
+sb.auth.onAuthStateChange((event)=>{
+  if(event === "SIGNED_IN") demarrerApp();
+  if(event === "SIGNED_OUT") go("ecran-login");
+});
+demarrerApp();
+</script>
+</body>
+</html>
