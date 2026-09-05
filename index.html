@@ -373,7 +373,12 @@ function collecter(){
 }
 async function sauvegarder(){
   if(!cibleUserId) return false;
-  const { error } = await sb.from("bilans").upsert({ user_id: cibleUserId, data: collecter() });
+  // Le coach ne crée jamais de bilan, il ne fait qu'ajuster un bilan existant : un vrai UPDATE
+  // (au lieu d'un upsert) évite que Postgres vérifie aussi une policy d'INSERT côté RLS,
+  // qu'un coach n'a — à raison — pas le droit de déclencher pour le compte d'un client.
+  const { error } = modeCoach
+    ? await sb.from("bilans").update({ data: collecter() }).eq("user_id", cibleUserId)
+    : await sb.from("bilans").upsert({ user_id: cibleUserId, data: collecter() });
   if(!error){
     const b = document.getElementById("badgeSauv");
     b.style.display = "inline";
