@@ -27,6 +27,16 @@ async function sessionActuelle(){
   return data.session || null;
 }
 
+/* Retire les jetons du lien magique de l'URL une fois la session établie
+   (sinon ils restent visibles/enregistrables dans les favoris du navigateur). */
+function nettoyerUrlAuth(){
+  const url = new URL(window.location.href);
+  let modifie = false;
+  if(url.hash && /access_token|refresh_token|type=magiclink/.test(url.hash)){ url.hash = ""; modifie = true; }
+  if(url.searchParams.has("code")){ url.searchParams.delete("code"); modifie = true; }
+  if(modifie) window.history.replaceState({}, document.title, url.pathname + url.search);
+}
+
 /* Récupère (ou crée si absent) le profil de l'utilisateur connecté. */
 async function profilActuel(){
   const session = await sessionActuelle();

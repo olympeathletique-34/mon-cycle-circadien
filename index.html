@@ -1017,6 +1017,7 @@ function desactiverPourCoach(){
 async function demarrerApp(){
   const session = await sessionActuelle();
   if(!session){ go("ecran-login"); return; }
+  nettoyerUrlAuth();
 
   monUserId = session.user.id;
   monProfil = await profilActuel();

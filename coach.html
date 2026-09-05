@@ -106,6 +106,7 @@ document.getElementById("btnEnvoyerLien").addEventListener("click", async ()=>{
 async function demarrer(){
   const session = await sessionActuelle();
   if(!session){ afficherBloc("bloc-login"); return; }
+  nettoyerUrlAuth();
   const profil = await profilActuel();
   if(!profil){ afficherBloc("bloc-login"); document.getElementById("loginMsg").textContent = "Impossible de charger ton profil."; return; }
   afficherCompteBar(profil);
