@@ -210,6 +210,7 @@
         <textarea id="c-motif" rows="3" placeholder="Ex. 10 h au lieu de 8 h : sous traitement GLP-1, l'appétit est coupé — priorité à 3 prises protéinées dans la fenêtre (1,6–2 g/kg/jour) pour protéger la masse musculaire."></textarea>
       </div>
       <button class="btn small" id="btnCoachSave" style="margin-top:14px">Enregistrer l'ajustement</button>
+      <p class="muted" id="coachSaveMsg" style="margin-top:8px"></p>
     </div>
   </div>
 
@@ -273,6 +274,7 @@
         <div><label class="field" for="c-tour">Tour de taille cible (cm)</label><input type="number" id="c-tour" inputmode="decimal" step="0.5" min="50" max="200"></div>
       </div>
       <button class="btn small" id="btnCiblesSave" style="margin-top:14px">Enregistrer les objectifs</button>
+      <p class="muted" id="ciblesSaveMsg" style="margin-top:8px"></p>
     </div>
   </div>
 
@@ -370,13 +372,16 @@ function collecter(){
   return { prenom:etat.prenom, objectif:etat.objectif, commentaire:etat.commentaire, reponses:etat.reponses, horaires, coach:etat.coach, mesures:etat.mesures, date:new Date().toISOString() };
 }
 async function sauvegarder(){
-  if(!cibleUserId) return;
+  if(!cibleUserId) return false;
   const { error } = await sb.from("bilans").upsert({ user_id: cibleUserId, data: collecter() });
   if(!error){
     const b = document.getElementById("badgeSauv");
     b.style.display = "inline";
     clearTimeout(b._t); b._t = setTimeout(()=>b.style.display="none", 1800);
-  } else console.error(error);
+    return true;
+  }
+  console.error(error);
+  return false;
 }
 let timerSauv = null;
 function planifierSauvegarde(){ majMenuBilan(); if(modeCoach) return; clearTimeout(timerSauv); timerSauv = setTimeout(sauvegarder, 600); }
@@ -514,6 +519,23 @@ const fmtDur = m => { const h=Math.floor(m/60), mn=Math.round(m%60); return mn? 
 const diffCirc = (a,b)=>{ const d=Math.abs(a-b)%1440; return Math.min(d,1440-d); };
 const span = (debut,fin)=> norm(fin-debut); // durée debut→fin dans le sens horaire
 
+/* Fenêtre cible du protocole selon l'objectif — ne dépend que des horaires et de l'objectif,
+   donc calculable même si le test des 45 questions n'est pas terminé. */
+function cibleActuelle(){
+  const sPremiere = toMin(document.getElementById("s-premiere").value);
+  const sCoucher = toMin(document.getElementById("s-coucher").value);
+  const cibles = {perte:{h:9,txt:"8–9 h"}, perf:{h:10,txt:"10 h"}, sante:{h:11,txt:"11–12 h"}};
+  const cible = cibles[etat.objectif] || cibles.sante;
+  let cibleDebut = sPremiere;
+  let cibleFin = norm(cibleDebut + cible.h*60);
+  const finMax = norm(sCoucher - 180);
+  if (span(cibleDebut, cibleFin) > span(cibleDebut, finMax)) {
+    cibleFin = finMax;
+    cibleDebut = norm(cibleFin - cible.h*60);
+  }
+  return { cible, cibleDebut, cibleFin };
+}
+
 /* ══════════ CALCUL & AFFICHAGE RÉSULTATS ══════════ */
 document.getElementById("btnResultats").addEventListener("click", ()=>afficherResultats());
 document.getElementById("btnRefaire").addEventListener("click",()=>go("ecran-physique"));
@@ -551,17 +573,7 @@ function afficherResultats(rerendu){
   );
 
   // Fenêtre cible selon objectif
-  const cibles = {perte:{h:9,txt:"8–9 h"}, perf:{h:10,txt:"10 h"}, sante:{h:11,txt:"11–12 h"}};
-  const cible = cibles[etat.objectif] || cibles.sante;
-
-  // Fenêtre cible positionnée : ancrée sur la première bouchée de semaine, fin ≥3h avant coucher
-  let cibleDebut = t.sPremiere;
-  let cibleFin = norm(cibleDebut + cible.h*60);
-  const finMax = norm(t.sCoucher - 180);
-  if (span(cibleDebut, cibleFin) > span(cibleDebut, finMax)) {
-    cibleFin = finMax;
-    cibleDebut = norm(cibleFin - cible.h*60);
-  }
+  const { cible, cibleDebut, cibleFin } = cibleActuelle();
 
   // Titre
   const objTxt = {perte:"perte de poids", perf:"performance", sante:"santé et sommeil"}[etat.objectif];
@@ -752,7 +764,17 @@ document.getElementById("btnCoachSave").addEventListener("click", async ()=>{
   etat.coach.debut = document.getElementById("c-debut").value || "08:00";
   etat.coach.fin   = document.getElementById("c-fin").value   || "18:00";
   etat.coach.motif = document.getElementById("c-motif").value.trim();
-  await sauvegarder();
+  const msg = document.getElementById("coachSaveMsg");
+  msg.textContent = "Enregistrement…";
+  msg.style.color = "";
+  const ok = await sauvegarder();
+  msg.textContent = ok ? "✓ Ajustement enregistré." : "Erreur : l'enregistrement a échoué (vérifie ta connexion et réessaie).";
+  msg.style.color = ok ? "var(--vert)" : "var(--rouge)";
+  // Rafraîchit toujours l'aperçu de la fenêtre, même si le bilan des 45 questions n'est pas terminé
+  // (cet aperçu ne dépend que des horaires et de l'objectif, pas des réponses oui/non).
+  document.getElementById("legCoach").style.display = etat.coach.actif ? "inline" : "none";
+  const { cible, cibleDebut, cibleFin } = cibleActuelle();
+  rendreCoach({ cibleTxt: cible.txt, cibleDebut, cibleFin });
   if(bilanComplet()) afficherResultats(true);
 });
 function rendreCoach(ctx){
@@ -806,7 +828,13 @@ document.getElementById("btnCiblesSave").addEventListener("click", async ()=>{
   const p = parseFloat(document.getElementById("c-poids").value), t = parseFloat(document.getElementById("c-tour").value);
   etat.coach.poidsCible = p>0 ? p : null;
   etat.coach.tourCible  = t>0 ? t : null;
-  await sauvegarder(); majSuivi();
+  const msg = document.getElementById("ciblesSaveMsg");
+  msg.textContent = "Enregistrement…";
+  msg.style.color = "";
+  const ok = await sauvegarder();
+  msg.textContent = ok ? "✓ Objectifs enregistrés." : "Erreur : l'enregistrement a échoué (vérifie ta connexion et réessaie).";
+  msg.style.color = ok ? "var(--vert)" : "var(--rouge)";
+  majSuivi();
 });
 
 function majSuivi(){
