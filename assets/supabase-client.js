@@ -3,8 +3,8 @@
    Dashboard → Project Settings → API → "Project URL" et "anon public" key.
    Ces valeurs sont publiques par nature (protégées par les policies RLS
    côté base de données) : aucun risque à les laisser dans le code client. */
-const SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
-const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON_PUBLIC";
+const SUPABASE_URL = "https://fdwgzlfhorohmqtfnmnq.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkd2d6bGZob3JvaG1xdGZubW5xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1NDcyNTIsImV4cCI6MjEwNDEyMzI1Mn0.Us6BCchUcNx_kjSlaqL8ODUXbgqCwZWIoOjhdSxS3hk";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
