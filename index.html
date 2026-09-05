@@ -159,6 +159,10 @@
   <h1 id="titreResultats">Ton code circadien</h1>
   <p class="lead" id="rappelObjectif" style="margin-top:-6px"></p>
 
+  <div class="explication">
+    <b>En une phrase :</b> ton corps a une horloge interne. Elle décide à quelle heure tu digères bien, à quelle heure tu es en forme et à quelle heure tu dois dormir. Quand tes horaires de repas, de sport et de sommeil ne collent pas avec cette horloge, tu stockes plus, tu dors moins bien et tu manques d'énergie. Ce plan te dit simplement <b>à quelle heure manger, bouger et te coucher</b> pour te recaler dessus.
+  </div>
+
   <div class="info-box no-print" id="bandeauCoach" style="display:none"></div>
 
   <div class="carte" id="carteCommentaire" style="display:none;border-color:var(--ciel);background:#F5F8FB">
@@ -166,33 +170,44 @@
     <p id="texteCommentaire" style="white-space:pre-wrap;margin-top:6px;font-size:15px"></p>
   </div>
 
+  <div class="carte" style="border-color:var(--or)">
+    <h3>Par où commencer : tes 3 priorités</h3>
+    <p class="muted" style="margin-top:2px">Si tu ne retiens que trois choses, retiens celles-ci. Le reste de la page les détaille.</p>
+    <div id="priorites"></div>
+  </div>
+
+  <h2 style="margin-top:26px">Ce que tes réponses disent</h2>
+  <p class="muted" style="margin:0 0 10px">Chaque « oui » est un petit signe que ton horloge interne est déréglée. Plus il y en a, plus tu as à gagner.</p>
   <div class="score-grid" id="scoreGrid"></div>
   <div class="carte"><div id="verdictsTest1"></div></div>
 
-  <h2 style="margin-top:26px">Tes chiffres circadiens</h2>
+  <h2 style="margin-top:26px">Tes 4 chiffres clés</h2>
+  <p class="muted" style="margin:0 0 10px">Vert = c'est bon. Rouge = c'est là que tu vas agir.</p>
   <div class="carte"><div id="kpis"></div></div>
 
   <div class="carte cadran-box">
-    <h3>Ta journée sur le cadran 24 h</h3>
+    <h3>Ta journée vue comme une horloge</h3>
+    <p class="muted" style="margin:4px 0 8px;text-align:left">Le cercle fait 24 h, midi en bas, minuit en haut. Le trait bleu nuit = quand tu dors. Le trait doré = la plage où tu manges aujourd'hui. Les pointillés verts = la plage où tu devrais manger. Le but : que le doré rentre dans le vert.</p>
     <div id="cadran"></div>
     <div class="legende">
       <span><i style="background:#12203A"></i>Sommeil</span>
-      <span><i style="background:#C98A1B"></i>Fenêtre alimentaire actuelle</span>
-      <span><i style="background:#3E7C5B"></i>Fenêtre cible</span>
-      <span id="legCoach" style="display:none"><i style="background:#6F94B4"></i>Fenêtre du coach</span>
+      <span><i style="background:#C98A1B"></i>Quand tu manges aujourd'hui</span>
+      <span><i style="background:#3E7C5B"></i>Quand tu devrais manger</span>
+      <span id="legCoach" style="display:none"><i style="background:#6F94B4"></i>Plage fixée par ton coach</span>
     </div>
   </div>
 
   <h2 style="margin-top:26px" id="titrePlan">Ton plan personnalisé</h2>
 
   <div class="carte reco">
-    <h3>1 · Ta fenêtre alimentaire (TRE)</h3>
+    <h3>1 · Quand manger</h3>
+    <p class="sous-titre">Ta « fenêtre alimentaire » = la plage horaire entre ta première et ta dernière bouchée (ou gorgée de café, de jus…). En dehors, seule l'eau est permise.</p>
     <div id="recoTRE"></div>
   </div>
 
   <div class="carte coach" id="carteCoach">
-    <h3>Ajustement du coach</h3>
-    <p class="muted" style="margin-top:4px">La fenêtre du protocole reste la référence. Pour un cas particulier, ton coach peut en fixer une autre — c'est alors celle-ci que tu appliques.</p>
+    <h3>Ajustement de ton coach</h3>
+    <p class="muted" style="margin-top:4px">Les horaires ci-dessus sont ceux de la méthode. Si ta situation le demande (traitement, travail de nuit…), ton coach peut te fixer une plage différente : c'est alors celle-là que tu suis.</p>
     <div id="coachVue"></div>
     <div id="coachEdit" style="display:none">
       <label class="field" for="c-actif">Appliquer un ajustement</label>
@@ -215,21 +230,24 @@
   </div>
 
   <div class="carte reco">
-    <h3>2 · Nutrition dans la fenêtre</h3>
+    <h3>2 · Quoi manger, et à quel moment</h3>
+    <p class="sous-titre">Ton corps gère bien le sucre le matin et mal le soir. Du coup : repas du matin copieux, repas du soir plus léger.</p>
     <ul id="recoNutrition"></ul>
   </div>
 
   <div class="carte reco">
-    <h3>3 · Sport aux bons horaires</h3>
+    <h3>3 · Quand bouger</h3>
+    <p class="sous-titre">Le même effort n'a pas le même effet selon l'heure. Deux bons créneaux : le matin pour brûler, la fin d'après-midi pour être fort.</p>
     <ul id="recoSport"></ul>
   </div>
 
   <div class="carte reco">
-    <h3>4 · Lumière &amp; sommeil</h3>
+    <h3>4 · Lumière et sommeil</h3>
+    <p class="sous-titre">La lumière est le réglage principal de ton horloge : beaucoup le jour, très peu le soir. C'est ce qui décide de la qualité de tes nuits.</p>
     <ul id="recoSommeil"></ul>
   </div>
 
-  <p class="note-livre">Protocole issu de <em>The Circadian Code</em> — Dr Satchin Panda (Salk Institute). Ce bilan ne remplace pas un avis médical : parles-en à ton médecin avant de changer ton alimentation, surtout si tu suis un traitement.</p>
+  <p class="note-livre">Cette méthode vient du livre <em>The Circadian Code</em> du Dr Satchin Panda, chercheur au Salk Institute (Californie). Elle ne remplace pas l'avis de ton médecin : parle-lui avant de changer tes horaires de repas, surtout si tu prends un traitement.</p>
 
   <button class="btn or no-print" id="btnSuiviResultats">Mon suivi hebdomadaire</button>
   <button class="btn no-print" onclick="window.print()">Imprimer / Enregistrer en PDF</button>
@@ -580,11 +598,40 @@ function afficherResultats(rerendu){
   // Fenêtre cible selon objectif
   const { cible, cibleDebut, cibleFin } = cibleActuelle();
 
+  // Fenêtre appliquée : celle du coach si ajustement, sinon celle de la méthode
+  const coachActif = !!etat.coach.actif;
+  const coachDebut = coachActif ? toMin(etat.coach.debut) : null;
+  const coachFin   = coachActif ? toMin(etat.coach.fin)   : null;
+  const debutApp = coachActif ? coachDebut : cibleDebut;
+  const finApp   = coachActif ? coachFin   : cibleFin;
+  document.getElementById("legCoach").style.display = coachActif ? "inline" : "none";
+  // Palier de la 1re semaine : on ne demande jamais de sauter directement à la cible finale
+  const premierPalierH = Math.min(12, Math.floor(fenetre/60));
+  const enDescente = !coachActif && fenetre > cible.h*60;
+  const finCetteSemaine = enDescente ? norm(debutApp + premierPalierH*60) : finApp;
+
   // Titre
-  const objTxt = {perte:"perte de poids", perf:"performance", sante:"santé et sommeil"}[etat.objectif];
+  const objTxt = {perte:"perte de poids", perf:"performance sportive", sante:"santé, énergie et sommeil"}[etat.objectif];
   document.getElementById("titreResultats").innerHTML = `${esc(etat.prenom)}, voici ton <em>code circadien</em>`;
-  document.getElementById("rappelObjectif").innerHTML = `Ton objectif : <b>${objTxt}</b> · fenêtre cible <b>${cible.txt}</b>`;
-  document.getElementById("titrePlan").textContent = `Ton plan personnalisé, ${etat.prenom}`;
+  document.getElementById("rappelObjectif").innerHTML = `Ton objectif : <b>${objTxt}</b>. Concrètement, tu vas manger sur <b>${coachActif ? fmtDur(span(debutApp,finApp)) : cible.txt}</b> par jour — le reste du temps, rien d'autre que de l'eau.`;
+  document.getElementById("titrePlan").textContent = `Ton plan, ${etat.prenom} : à quelle heure faire quoi`;
+
+  // Tes 3 priorités : les actions les plus rentables pour CE client, dans l'ordre d'impact
+  const prios = [];
+  if (R[8]===1 || R[9]===1) prios.push([`Plus rien après le dîner : cette semaine, dernière bouchée à ${fmtH(finCetteSemaine)} au plus tard`, `C'est le changement qui rapporte le plus. Le soir, ton corps est réglé pour se reposer, pas pour digérer : ce que tu manges tard part en stockage et abîme ta nuit.${enDescente ? ` Tu avanceras ensuite d'1 h par semaine, jusqu'à ${fmtH(finApp)}.` : ""} Faim le soir les premières semaines ? Un grand verre d'eau, et ça passe.`]);
+  if (fenetre > cible.h*60 + 60) prios.push([`Rapproche ta première et ta dernière bouchée : cette semaine ${fmtH(debutApp)} → ${fmtH(finCetteSemaine)}, objectif final ${fmtH(debutApp)} → ${fmtH(finApp)}`, `Aujourd'hui tu manges sur ${fmtDur(fenetre)}. Plus la plage est courte (sans descendre sous 8 h), plus ton corps a de temps chaque nuit pour brûler ses réserves et se réparer. Tu y vas 1 h par semaine, sans brusquer.`]);
+  if (ecartDinerCoucher < 180) prios.push([`Finis de manger au moins 3 h avant de te coucher`, `Là, tu as ${fmtDur(ecartDinerCoucher)} entre ta dernière bouchée et ton coucher. Ton corps a besoin de ces 3 h pour digérer et se refroidir un peu — sinon ton sommeil profond en pâtit.`]);
+  if (sommeilSem < 420) prios.push([`Dors au moins 7 h par nuit (aujourd'hui : ${fmtDur(sommeilSem)})`, `Le sommeil, c'est le moment où ton corps se répare et règle ton appétit. En dessous de 7 h, tu as plus faim le lendemain et tu stockes plus — même en mangeant pareil.`]);
+  if (jetlag >= 120) prios.push([`Garde les mêmes horaires le week-end, à 1 h près`, `Ton week-end décale tes horaires de ${fmtDur(jetlag)}. Pour ton corps, c'est comme prendre l'avion tous les vendredis : le lundi, tu repars en décalage horaire.`]);
+  if (R[1]===1) prios.push([`Passe au moins 1 h dehors chaque jour, de préférence le matin`, `C'est la lumière du matin qui remet ton horloge à l'heure. Sans elle, tout le reste se dérègle. Même sous les nuages, dehors est bien plus lumineux qu'à l'intérieur.`]);
+  if (R[3]===1) prios.push([`Écrans en mode nuit dès ${fmtH(norm(t.sCoucher-120))}, éteints à ${fmtH(norm(t.sCoucher-60))}`, `La lumière des écrans fait croire à ton cerveau qu'il fait encore jour : il retarde le sommeil. Moins de lumière le soir = tu t'endors plus vite et tu dors mieux.`]);
+  if (sportMoment==="soir" || R[2]===1) prios.push([`Déplace ta séance de sport avant le dîner`, `Une séance intense tard le soir réveille ton corps au moment où il devrait ralentir. Résultat : tu t'endors plus tard et moins bien.`]);
+  if (R[6]===1) prios.push([`Dernier café à midi`, `La caféine reste jusqu'à 10 h dans ton corps : le café de 16 h, c'est encore un demi-café dans ton sang à minuit.`]);
+  if (R[4]===1) prios.push([`Alcool : pendant le dîner, jamais après`, `Une gorgée compte comme une bouchée — le verre du soir rallonge ta plage de repas et coupe ton sommeil en morceaux.`]);
+  if (prios.length < 3) prios.push([`Garde la même plage de repas tous les jours, à 30 min près`, `Ton horloge adore la régularité. Des horaires stables font plus d'effet que des horaires parfaits mais irréguliers.`]);
+  if (prios.length < 3) prios.push([`Une marche de 10 à 15 min le matin, dehors, avant de manger`, `Deux bénéfices en un : la lumière du jour cale ton horloge, et bouger à jeun puise dans tes réserves.`]);
+  if (prios.length < 3) prios.push([`Le soir : protéines et légumes, peu de pain, pâtes, riz ou sucre`, `Le soir, ton corps stocke le sucre au lieu de le brûler. Garde les féculents pour le matin et le midi.`]);
+  document.getElementById("priorites").innerHTML = prios.slice(0,3).map(([a,p],i)=>`<div class="prio"><div class="num">${i+1}</div><div><b>${a}</b><span>${p}</span></div></div>`).join("");
 
   const cCom = document.getElementById("carteCommentaire");
   if(etat.commentaire && etat.commentaire.trim()){
@@ -598,7 +645,7 @@ function afficherResultats(rerendu){
   // Scores
   const grid = document.getElementById("scoreGrid");
   grid.innerHTML = "";
-  [["Physique",sPhy,15,sPhy>=3],["Mental",sMen,15,sMen>=3],["Habitudes",sHab,15,sHab>=5]].forEach(([nom,val,max,alerte])=>{
+  [["Corps",sPhy,15,sPhy>=3],["Tête & énergie",sMen,15,sMen>=3],["Habitudes",sHab,15,sHab>=5]].forEach(([nom,val,max,alerte])=>{
     grid.innerHTML += `<div class="score ${alerte?"alerte":(val<=1?"ok":"")}"><b>${val}<span style="font-size:14px;color:var(--gris)">/${max}</span></b><span>${nom}</span></div>`;
   });
 
@@ -611,30 +658,22 @@ function afficherResultats(rerendu){
     if(!items.length) return "";
     return `<ul style="margin:8px 0 0 18px;font-size:14px;color:#4a4d55">${items.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`;
   };
-  if (sPhy>=3) verdict("r",`<b>${sPhy} « oui » côté physique.</b> Selon le Dr Panda, 3 ou plus dans cette section indique un rythme circadien probablement non optimal. Bonne nouvelle : ces symptômes sont justement ceux qui répondent le mieux au protocole.${detailOui("physique")}`);
-  else verdict("v",`Côté physique (${sPhy}/15), tu es dans la norme du livre — 1 à 2 « oui » sont courants.${detailOui("physique")}`);
-  if (sMen>=3) verdict("r",`<b>${sMen} « oui » côté mental et énergie.</b> Là aussi, 3 ou plus = signe d'un rythme désynchronisé. Concentration, humeur et fringales s'améliorent typiquement en 2 à 4 semaines de protocole.${detailOui("mental")}`);
-  else verdict("v",`Côté mental et énergie (${sMen}/15), rien d'alarmant.${detailOui("mental")}`);
+  if (sPhy>=3) verdict("r",`<b>${sPhy} « oui » côté corps.</b> À partir de 3, c'est le signe que ton horloge interne est déréglée. La bonne nouvelle : ce sont justement ces gênes-là qui s'améliorent le plus vite quand on recale ses horaires.${detailOui("physique")}`);
+  else verdict("v",`<b>Côté corps (${sPhy}/15), rien d'inquiétant</b> — 1 ou 2 « oui », c'est courant.${detailOui("physique")}`);
+  if (sMen>=3) verdict("r",`<b>${sMen} « oui » côté tête et énergie.</b> Fatigue, coups de mou, fringales, moral en dents de scie : ce sont les premiers signes d'une horloge décalée — et souvent les premiers à disparaître, en 2 à 4 semaines.${detailOui("mental")}`);
+  else verdict("v",`<b>Côté tête et énergie (${sMen}/15), rien d'inquiétant.</b>${detailOui("mental")}`);
   verdict(sHab>=5?"r":(sHab>=1?"o":"v"),
-    (sHab===0 ? "Aucune habitude perturbatrice détectée — rare et excellent." :
-    `<b>${sHab} habitude${sHab>1?"s":""} qui perturbe${sHab>1?"nt":""} ton horloge.</b> Chacune est un levier concret : le plan ci-dessous les traite une par une.`) + detailOui("habitudes"));
+    (sHab===0 ? "<b>Aucune habitude qui dérègle ton horloge</b> — c'est rare, bravo." :
+    `<b>${sHab} habitude${sHab>1?"s":""} qui dérègle${sHab>1?"nt":""} ton horloge.</b> Ce sont les plus faciles à changer : chacune est traitée dans le plan ci-dessous.`) + detailOui("habitudes"));
 
   // KPIs
   const k = document.getElementById("kpis");
   const kpi = (nom,val,ok,cibleTxt)=>`<div class="kpi"><span>${nom}<br><span class="muted">${cibleTxt}</span></span><b class="${ok?"good":"bad"}">${val}</b></div>`;
   k.innerHTML =
-    kpi("Fenêtre alimentaire", fmtDur(fenetre), fenetre<=720, "Objectif du livre : ≤ 12 h (optimal 8–11 h)") +
-    kpi("Dernière bouchée → coucher", fmtDur(ecartDinerCoucher), ecartDinerCoucher>=180, "Objectif : ≥ 3 h") +
-    kpi("Sommeil (semaine)", fmtDur(sommeilSem), sommeilSem>=420, "Objectif : ≥ 7 h") +
-    kpi("Jetlag social (écart semaine/week-end)", fmtDur(jetlag), jetlag<120, "Objectif : < 2 h — décaler de 3 h = un vol Los Angeles → New York pour ton corps");
-
-  // Fenêtre du coach (cas particulier) → horaires appliqués dans le plan
-  const coachActif = !!etat.coach.actif;
-  const coachDebut = coachActif ? toMin(etat.coach.debut) : null;
-  const coachFin   = coachActif ? toMin(etat.coach.fin)   : null;
-  const debutApp = coachActif ? coachDebut : cibleDebut;
-  const finApp   = coachActif ? coachFin   : cibleFin;
-  document.getElementById("legCoach").style.display = coachActif ? "inline" : "none";
+    kpi("Durée pendant laquelle tu manges", fmtDur(fenetre), fenetre<=720, "De ta 1re à ta dernière bouchée. But : 12 h max, idéal 8 à 11 h") +
+    kpi("Entre ta dernière bouchée et le coucher", fmtDur(ecartDinerCoucher), ecartDinerCoucher>=180, "But : au moins 3 h, le temps de digérer avant de dormir") +
+    kpi("Sommeil en semaine", fmtDur(sommeilSem), sommeilSem>=420, "But : au moins 7 h") +
+    kpi("Décalage semaine / week-end", fmtDur(jetlag), jetlag<120, "But : moins de 2 h. Au-delà, c'est un mini-jetlag chaque lundi");
 
   // Cadran SVG
   dessinerCadran(t, premiereTot, derniereTard, cibleDebut, cibleFin, sportMoment, coachDebut, coachFin);
@@ -643,60 +682,67 @@ function afficherResultats(rerendu){
   /* ── RECO 1 : TRE ── */
   const recoTRE = document.getElementById("recoTRE");
   let html = "";
-  html += `<p style="font-size:15px">Objectif <b>${objTxt}</b> → fenêtre cible : <b>${cible.txt}</b>, soit <span class="horaire">${fmtH(cibleDebut)} → ${fmtH(cibleFin)}</span> (première gorgée de café comprise, dernière bouchée 3 h avant ton coucher).</p>`;
+  html += `<p style="font-size:15px"><b>Ta plage de repas : <span class="horaire">${fmtH(debutApp)} → ${fmtH(finApp)}</span></b>${coachActif ? " (fixée par ton coach)" : ` (${cible.txt})`}. Ta première bouchée — ou ton premier café au lait — à ${fmtH(debutApp)}, ta dernière bouchée à ${fmtH(finApp)}. Entre les deux, tu manges normalement. Après, uniquement de l'eau ou une tisane sans rien dedans.</p>`;
+  html += `<span class="pourquoi"><b>Pourquoi :</b> pendant les heures sans manger, ton corps arrête de stocker et passe en mode « nettoyage » : il brûle ses réserves, répare ses cellules et prépare un bon sommeil. Plus cette pause est longue (jusqu'à 16 h d'affilée), plus elle est efficace.</span>`;
   if (fenetre > cible.h*60){
     const paliers = [];
     let f = Math.min(12, Math.floor(fenetre/60));
     paliers.push(`Sem. 1–2 : ${f} h`);
     let s = 3;
     for(let hh=f-1; hh>=cible.h; hh--){ paliers.push(`Sem. ${s} : ${hh} h`); s++; }
-    html += `<p style="font-size:15px;margin-top:10px">Ta fenêtre actuelle est de <b>${fmtDur(fenetre)}</b>. Le livre prescrit une réduction d'<b>1 h par semaine</b> — les bénéfices doublent à chaque heure gagnée entre 12 h et 8 h :</p>
+    html += `<p style="font-size:15px;margin-top:14px"><b>Comment y arriver sans forcer :</b> aujourd'hui tu manges sur ${fmtDur(fenetre)}. Tu réduis d'<b>1 h par semaine</b>, en avançant ton dîner ou en reculant ton petit-déj. <b>Cette semaine : dernière bouchée à ${fmtH(finCetteSemaine)}.</b> Ton corps s'habitue semaine après semaine :</p>
     <div class="plan-sem">${paliers.map(p=>`<span>${p}</span>`).join("")}</div>`;
   } else {
-    html += `<p style="font-size:15px;margin-top:10px">Ta fenêtre actuelle (${fmtDur(fenetre)}) est déjà dans la cible — ton chantier est la <b>régularité</b> : même fenêtre à ±30 min tous les jours, week-end compris.</p>`;
+    html += `<p style="font-size:15px;margin-top:14px"><b>Bonne nouvelle :</b> ta plage actuelle (${fmtDur(fenetre)}) est déjà la bonne. Ton seul travail : la garder <b>tous les jours aux mêmes heures</b>, à 30 min près, week-end compris.</p>`;
   }
-  if (etat.objectif==="perte") html += `<p class="muted" style="margin-top:10px">Mécanisme : la combustion des graisses démarre 6–8 h après le dernier repas et augmente quasi exponentiellement après 12 h de jeûne. Une fois ton poids cible atteint, tu repasses à 11–12 h pour le maintenir.</p>`;
-  html += `<p class="muted" style="margin-top:8px">Règle du week-end : sortir de sa fenêtre 3 fois par semaine = ne plus faire de TRE. Un écart occasionnel (soirée) : tu reprends normalement le lendemain.</p>`;
+  if (etat.objectif==="perte") html += `<span class="pourquoi" style="margin-top:10px"><b>Pour la perte de poids :</b> ton corps commence à puiser dans la graisse 6 à 8 h après le dernier repas, et de plus en plus fort après 12 h sans manger. Une fois ton poids atteint, tu élargis à 11–12 h pour le garder.</span>`;
+  html += `<span class="pourquoi" style="margin-top:10px"><b>Et les écarts ?</b> Une soirée de temps en temps, ce n'est pas grave : tu reprends normalement le lendemain. Mais à 3 écarts par semaine, l'effet disparaît.</span>`;
   recoTRE.innerHTML = html;
+
+  // Chaque recommandation = ce que tu fais (en gras) + pourquoi (une phrase simple)
+  const reco = (ul, action, pourquoi, warn)=>{
+    const l = document.createElement("li");
+    if(warn) l.className = "warn";
+    l.innerHTML = `<b>${action}</b>${pourquoi ? `<span class="pourquoi"><b>Pourquoi :</b> ${pourquoi}</span>` : ""}`;
+    ul.appendChild(l);
+  };
 
   /* ── RECO 2 : NUTRITION ── */
   const nut = document.getElementById("recoNutrition");
   nut.innerHTML = "";
-  const li = (ul,txt,warn)=>{ const l=document.createElement("li"); if(warn)l.className="warn"; l.innerHTML=txt; ul.appendChild(l); };
-  if (coachActif) li(nut,`<b>Ta fenêtre appliquée : <span class="horaire">${fmtH(debutApp)} → ${fmtH(finApp)}</span></b> (${fmtDur(span(debutApp,finApp))}, ajustée par ton coach). Les horaires ci-dessous en tiennent compte.`);
-  li(nut,`<b>Petit-déjeuner copieux vers <span class="horaire">${fmtH(debutApp)}</span></b> : fibres + protéines + bonnes graisses (ex. du livre : flocons d'avoine, cottage cheese, poudre d'amande, cranberries). La réponse à l'insuline est meilleure en première moitié de journée ; les protéines le matin = satiété 4–6 h et moins de reflux le soir.`);
-  li(nut,`<b>Déjeuner léger</b> (salade, soupe) pour éviter la léthargie de l'après-midi.`);
-  li(nut,`<b>Dîner : protéines + légumes + bonnes graisses, peu de glucides simples</b> — le contrôle glycémique est faible le soir, les glucides du dîner partent en graisse. Fin du repas au plus tard à <span class="horaire">${fmtH(finApp)}</span>.`);
-  if (ecartDinerCoucher < 180) li(nut,`<b>Ton écart dernière bouchée → coucher est de ${fmtDur(ecartDinerCoucher)}.</b> Trop court : il faut ≥ 3 h pour que le corps refroidisse (−0,5 °C nécessaire au sommeil profond) et échappe à l'interférence mélatonine/glycémie. Avance ton dîner ou recule légèrement ton coucher.`, true);
-  if (R[4]===1) li(nut,`<b>Alcool : avant ou pendant le dîner, jamais après.</b> « Une gorgée = une bouchée » : le verre d'après-dîner repousse ta fenêtre et fragmente ton sommeil.`, true);
-  if (R[6]===1) li(nut,`<b>Caféine : stop après midi.</b> Le café reste jusqu'à 10 h dans ton système. Ton coup de barre de l'après-midi est souvent de la déshydratation : commence par un verre d'eau.`, true);
-  if (R[8]===1 || R[9]===1) li(nut,`<b>Le grignotage du soir est ton levier n°1</b> : manger tard est, selon le livre, « le pire choix possible » — il annule les bénéfices de la journée. Faim du soir les 2–4 premières semaines : un verre d'eau, ça passe.`, true);
-  if (R[5]===1) li(nut,`<b>Hydratation</b> : un verre d'eau toutes les 1–2 h. L'eau (et les tisanes sans caféine, sans sucre, sans lait) ne casse jamais ta fenêtre, même après le dîner.`);
-  li(nut,`Grignoter en journée : ok si c'est sain. Le dentifrice ne compte pas. La 1<sup>re</sup> gorgée de café crème, si.`);
+  reco(nut,`Petit-déjeuner copieux vers <span class="horaire">${fmtH(debutApp)}</span> : des protéines (œufs, fromage blanc, yaourt), des fibres (flocons d'avoine, fruits) et de bonnes graisses (amandes, noix).`,`le matin, ton corps utilise bien ce que tu manges au lieu de le stocker. Et les protéines tôt te calent 4 à 6 h : moins de fringales dans la journée, moins d'envie de grignoter le soir.`);
+  reco(nut,`Déjeuner plutôt léger : légumes, salade ou soupe, avec une portion de protéines.`,`un repas trop lourd à midi, c'est le coup de barre de 15 h.`);
+  reco(nut,`Dîner : protéines + légumes + bonnes graisses. Peu de pain, pâtes, riz ou sucre. Terminé au plus tard à <span class="horaire">${fmtH(finCetteSemaine)}</span>${enDescente ? ` cette semaine (puis 1 h plus tôt chaque semaine, jusqu'à ${fmtH(finApp)})` : ""}.`,`le soir, ton corps range le sucre en graisse au lieu de le brûler. Le même plat de pâtes fait grossir le soir et pas le midi.`);
+  if (ecartDinerCoucher < 180) reco(nut,`Avance ton dîner : aujourd'hui il n'y a que ${fmtDur(ecartDinerCoucher)} entre ta dernière bouchée et ton coucher — il en faut 3.`,`digérer réchauffe le corps, or il doit se refroidir un peu pour bien dormir. Manger tard = sommeil moins profond, moins réparateur.`, true);
+  if (R[4]===1) reco(nut,`Alcool : pendant le dîner, jamais après.`,`une gorgée compte comme une bouchée. Le verre d'après-dîner rallonge ta plage de repas et coupe ton sommeil en morceaux.`, true);
+  if (R[6]===1) reco(nut,`Dernier café (ou thé, ou soda) à midi.`,`la caféine met 10 h à disparaître. Et ton coup de mou de l'après-midi vient souvent d'un manque d'eau, pas d'un manque de café : commence par un grand verre d'eau.`, true);
+  if (R[8]===1 || R[9]===1) reco(nut,`Plus rien après le dîner. Si tu as faim le soir : un grand verre d'eau ou une tisane.`,`c'est ce qui rapporte le plus. Le soir, ton corps est réglé pour se reposer, pas pour digérer : ce que tu manges tard part en stockage et perturbe ta nuit. La faim du soir disparaît en 2 à 4 semaines.`, true);
+  if (R[5]===1) reco(nut,`Un verre d'eau toutes les 1 à 2 heures dans la journée.`,`l'eau (et les tisanes sans sucre ni lait) ne compte jamais dans ta plage de repas, même après le dîner. Et beaucoup de « fringales » sont en fait de la soif.`);
+  reco(nut,`Une collation dans la journée ? Oui si c'est sain (fruit, noix, yaourt). Le dentifrice ne compte pas. Le café au lait du matin, si : c'est lui qui ouvre ta plage de repas.`);
 
   /* ── RECO 3 : SPORT ── */
   const spo = document.getElementById("recoSport");
   spo.innerHTML = "";
   const finAerobie = Math.min(span(t.sReveil, debutApp), 120);
-  li(spo,`<b>Matin (${fmtH(t.sReveil)} → ${fmtH(norm(t.sReveil+Math.max(finAerobie,45)))}) — cardio à jeun, dehors.</b> Après 10–12 h de jeûne nocturne, marche rapide, course modérée ou vélo puisent directement dans les graisses stockées. La lumière du jour (800–1 000 lux même sous les nuages) synchronise ton horloge cérébrale. Réserve : pas d'effort maximal ni de sport intense à jeun.`);
-  li(spo,`<b>Fin d'après-midi (15 h → dîner) — force et intensité.</b> Pic de tonus musculaire, de coordination et d'oxygénation : c'est LE créneau pour la musculation lourde et le HIIT (la performance varie jusqu'à 25 % dans la journée, pic vers 18 h). Enchaîne avec un dîner riche en protéines pour la récupération. Bonus : l'exercice réduit l'appétit du dîner et fait capter le glucose aux muscles sans insuline.`);
-  if (sportMoment==="soir" || R[2]===1) li(spo,`<b>Tu t'entraînes après 21 h : à déplacer.</b> L'intensité tardive fait remonter le cortisol à des niveaux matinaux, élève la température et retarde la mélatonine → endormissement décalé. Si aucun autre créneau n'est possible : loin des lumières vives + douche avant le coucher pour refroidir le corps. Après le dîner, seule une marche digestive est recommandée (elle limite même le pic glycémique).`, true);
-  else if (sportMoment==="aprem") li(spo,`Ton créneau actuel (15 h → dîner) est déjà l'optimal du livre — garde-le. Si la grosse séance pousse ton dîner à 20 h : ok, « l'exercice absout quelques péchés », passe simplement sur une fenêtre de 10 h ce jour-là.`);
-  else if (sportMoment==="matin") li(spo,`Ton entraînement à jeun du matin est exactement le combo « jeûne + sport » du livre pour maximiser la combustion des graisses. Garde les efforts maximaux pour la fin d'après-midi.`);
-  li(spo,`Pas de bloc de 30–45 min ? <b>2–3 segments de 10–15 min donnent les mêmes bénéfices</b> — et le duo matin + fin d'après-midi est le pattern qui renforce le plus le rythme circadien.`);
+  reco(spo,`Le matin (${fmtH(t.sReveil)} → ${fmtH(norm(t.sReveil+Math.max(finAerobie,45)))}), avant de manger : marche rapide, vélo tranquille ou course douce — dehors.`,`après une nuit sans manger, ton corps va chercher l'énergie directement dans ses réserves de graisse. Et la lumière du jour, même nuageux, remet ton horloge à l'heure. Pas d'effort à fond à jeun : reste à une allure où tu peux encore parler.`);
+  reco(spo,`Fin d'après-midi (15 h → dîner) : le moment des séances dures — musculation, sprints, efforts intenses.`,`c'est l'heure où tes muscles sont les plus chauds, les plus forts et les plus précis (jusqu'à 25 % de mieux qu'au réveil). Bonus : le sport à cette heure coupe un peu l'appétit du dîner et aide tes muscles à absorber le sucre du repas au lieu de le stocker.`);
+  if (sportMoment==="soir" || R[2]===1) reco(spo,`Tu t'entraînes après 21 h : déplace ta séance avant le dîner, ou au moins avant 20 h.`,`une séance intense tard le soir réveille ton corps (un peu comme un café) au moment où il devrait ralentir : tu t'endors plus tard et moins bien. Si tu n'as vraiment pas d'autre créneau : lumière tamisée pendant la séance, puis douche pour faire redescendre la température. Après le dîner, une marche digestive de 15 min, c'est parfait.`, true);
+  else if (sportMoment==="aprem") reco(spo,`Ton créneau actuel (15 h → dîner) est le meilleur : garde-le.`,`si ta séance repousse ton dîner à 20 h ce jour-là, pas de souci — le sport « rachète » l'écart. Ce jour-là, vise simplement une plage de repas de 10 h.`);
+  else if (sportMoment==="matin") reco(spo,`Ton sport du matin à jeun est exactement ce qu'il faut pour brûler. Garde-le.`,`réserve les efforts très intenses (charges lourdes, sprints) pour la fin d'après-midi, quand ton corps est prêt.`);
+  reco(spo,`Pas 45 min d'affilée ? 2 ou 3 fois 10 à 15 min dans la journée, ça marche aussi bien.`,`le combo « un peu le matin + un peu en fin d'après-midi » est même celui qui règle le mieux ton horloge.`);
 
   /* ── RECO 4 : LUMIÈRE & SOMMEIL ── */
   const som = document.getElementById("recoSommeil");
   som.innerHTML = "";
-  if (sommeilSem < 420) li(som,`<b>Tu dors ${fmtDur(sommeilSem)} en semaine.</b> Premier chantier du livre sous 7 h : coucher plus tôt ou gagner au moins 30 min de sommeil le matin. 3 nuits courtes sur 7 suffisent à ruiner le reste des efforts.`, true);
-  else li(som,`Ton volume de sommeil en semaine (${fmtDur(sommeilSem)}) tient l'objectif de ≥ 7 h.`);
-  if (alarme || R[12]===1) li(som,`<b>Tu as besoin d'un réveil</b> : signe que ton horloge maîtresse (le SCN) pense encore qu'il fait nuit. L'objectif final du protocole : te réveiller seul, spontanément.`, true);
-  if (jetlag >= 120) li(som,`<b>Jetlag social de ${fmtDur(jetlag)}.</b> Tes horaires de week-end décalent ton horloge comme un vol transatlantique hebdomadaire. Vise le même réveil et la même fenêtre à ±1 h maximum, 7 j/7.`, true);
-  if (R[1]===1) li(som,`<b>≥ 1 h de lumière du jour, idéalement le matin</b> (≥ 1 000 lux : dehors, en voiture, collé à une fenêtre — à 2 m de la fenêtre, on tombe déjà à 500 lux). Petit-déj près de la fenêtre, trajets à pied.`, true);
-  else li(som,`Continue ta dose quotidienne de lumière du jour — c'est elle qui cale l'horloge, l'humeur et la vigilance.`);
-  if (R[3]===1) li(som,`<b>Écrans : mode nuit/orange 2–3 h avant le coucher</b>, extinction visée à ${fmtH(norm(t.sCoucher-60))}. 1–2 h d'écran standard le soir suffisent à supprimer la mélatonine. Le soir : éclairage d'appoint plutôt que plafonnier ; veilleuses rouges si besoin.`, true);
-  if (R[10]===1) li(som,`<b>Dormir dans le noir complet</b> — la lumière pendant le sommeil perturbe l'horloge. Si une veilleuse est indispensable : rouge, la couleur qui contient le moins de bleu.`, true);
-  li(som,`Réduis la lumière bleue sur 8–9 h autour de ton sommeil : lumière forte le jour, faible la nuit — c'est la règle qui résume tout le chapitre.`);
+  if (sommeilSem < 420) reco(som,`Tu dors ${fmtDur(sommeilSem)} en semaine : gagne au moins 30 min, de préférence en te couchant plus tôt.`,`c'est le chantier n°1 quand on dort moins de 7 h. En manque de sommeil, tu as plus faim, tu stockes plus et tu récupères moins — 3 nuits courtes par semaine suffisent à gâcher le reste.`, true);
+  else reco(som,`Tu dors ${fmtDur(sommeilSem)} en semaine : c'est bon, garde ce rythme.`);
+  if (alarme || R[12]===1) reco(som,`Objectif à terme : te réveiller sans réveil.`,`si tu as besoin d'une alarme, c'est que ton horloge croit encore qu'il fait nuit. Quand tes horaires seront calés, le réveil naturel viendra tout seul — c'est le meilleur signe que ça marche.`, true);
+  if (jetlag >= 120) reco(som,`Le week-end, même heure de réveil et de repas qu'en semaine, à 1 h près.`,`tu décales tes horaires de ${fmtDur(jetlag)} le week-end. Pour ton corps, c'est un voyage en avion tous les vendredis : le lundi, tu es en décalage horaire.`, true);
+  if (R[1]===1) reco(som,`Au moins 1 h dehors chaque jour, si possible le matin : petit-déj près de la fenêtre, trajet à pied, café en terrasse.`,`la lumière du matin est le signal principal qui remet ton horloge à zéro. Dehors, même sous les nuages, il y a 5 à 10 fois plus de lumière qu'à l'intérieur — et à 2 m d'une fenêtre, tu en as déjà perdu la moitié.`, true);
+  else reco(som,`Tu prends déjà ta dose de lumière du jour : continue.`,`c'est elle qui cale ton horloge, ton humeur et ton énergie.`);
+  if (R[3]===1) reco(som,`Écrans en mode nuit (teinte orange) dès ${fmtH(norm(t.sCoucher-120))}, et éteints à ${fmtH(norm(t.sCoucher-60))}.`,`la lumière bleue des écrans dit à ton cerveau « il fait jour » : il repousse le sommeil. 1 à 2 h d'écran normal le soir suffisent. Préfère aussi les lampes d'appoint au plafonnier.`, true);
+  if (R[10]===1) reco(som,`Dors dans le noir complet. Si tu as besoin d'une veilleuse : rouge.`,`la lumière pendant la nuit dérègle ton horloge même les yeux fermés. Le rouge est la couleur qui la dérange le moins.`, true);
+  reco(som,`La règle qui résume tout : beaucoup de lumière le jour, très peu le soir et la nuit.`,`c'est le réglage principal de ton horloge interne. Tout le reste en découle.`);
 
   if(!modeCoach) sauvegarder();
   if(!rerendu) go("ecran-resultats");
@@ -785,15 +831,15 @@ document.getElementById("btnCoachSave").addEventListener("click", async ()=>{
 function rendreCoach(ctx){
   const vue = document.getElementById("coachVue");
   const c = etat.coach;
-  if(!c.actif){ vue.innerHTML = `<p class="muted" style="margin-top:10px">Aucun ajustement pour l'instant — tu suis la fenêtre du protocole.</p>`; return; }
+  if(!c.actif){ vue.innerHTML = `<p class="muted" style="margin-top:10px">Aucun ajustement : tu suis les horaires de la méthode indiqués ci-dessus.</p>`; return; }
   const d = toMin(c.debut), f = toMin(c.fin);
   vue.innerHTML = `
     <div class="compare">
-      <div><span class="muted">Protocole (référence)</span><b>${ctx.cibleTxt}</b><span>${fmtH(ctx.cibleDebut)} → ${fmtH(ctx.cibleFin)}</span></div>
-      <div class="actif"><span class="muted">Fixée par ton coach</span><b>${fmtDur(span(d,f))}</b><span>${fmtH(d)} → ${fmtH(f)}</span></div>
+      <div><span class="muted">La méthode dirait</span><b>${ctx.cibleTxt}</b><span>${fmtH(ctx.cibleDebut)} → ${fmtH(ctx.cibleFin)}</span></div>
+      <div class="actif"><span class="muted">Ton coach te fixe</span><b>${fmtDur(span(d,f))}</b><span>${fmtH(d)} → ${fmtH(f)}</span></div>
     </div>
     ${c.motif ? `<div class="motif">${esc(c.motif)}</div>` : ""}
-    <p class="muted">C'est la fenêtre bleue que tu appliques. Le protocole reste la cible vers laquelle on revient quand ton cas particulier ne s'applique plus.</p>`;
+    <p class="muted">C'est cette plage (en bleu sur l'horloge) que tu suis. Quand ta situation particulière ne s'appliquera plus, vous reviendrez aux horaires de la méthode.</p>`;
 }
 
 /* ══════════ SUIVI : POIDS & TOUR DE TAILLE ══════════ */
