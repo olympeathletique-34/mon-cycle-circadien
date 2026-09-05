@@ -27,6 +27,12 @@
   <button type="button" data-go="ecran-suivi">Mon suivi</button>
 </nav>
 
+<nav class="menu-client no-print" id="menuCoach" style="display:none">
+  <a href="coach.html">← Tous mes clients</a>
+  <button type="button" data-go="ecran-resultats">Bilan</button>
+  <button type="button" data-go="ecran-suivi">Suivi</button>
+</nav>
+
 <div class="prog no-print">
   <div class="prog-steps" id="progSteps">
     <span class="on"></span><span></span><span></span><span></span><span></span><span></span>
@@ -67,6 +73,9 @@
       <button class="choice" data-obj="perf">Performance sportive<small>Fenêtre cible 10 h — compatible avec les grosses séances du soir</small></button>
       <button class="choice" data-obj="sante">Santé, énergie &amp; sommeil<small>Fenêtre cible 11–12 h — le socle durable, tenable à vie</small></button>
     </div>
+
+    <label class="field" for="commentaire">Un mot pour ton coach <span class="muted" style="font-weight:400">(optionnel)</span></label>
+    <textarea id="commentaire" rows="4" placeholder="Comment tu te sens en ce moment, ce que tu as fait cette semaine, à quoi tu veux ressembler, ce que tu veux accomplir..."></textarea>
   </div>
 
   <button class="btn" id="btnStart" disabled>Commencer le bilan</button>
@@ -152,6 +161,11 @@
 
   <div class="info-box no-print" id="bandeauCoach" style="display:none"></div>
 
+  <div class="carte" id="carteCommentaire" style="display:none;border-color:var(--ciel);background:#F5F8FB">
+    <h3 id="titreCommentaire">Message</h3>
+    <p id="texteCommentaire" style="white-space:pre-wrap;margin-top:6px;font-size:15px"></p>
+  </div>
+
   <div class="score-grid" id="scoreGrid"></div>
   <div class="carte"><div id="verdictsTest1"></div></div>
 
@@ -218,8 +232,7 @@
 
   <button class="btn or no-print" id="btnSuiviResultats">Mon suivi hebdomadaire</button>
   <button class="btn no-print" onclick="window.print()">Imprimer / Enregistrer en PDF</button>
-  <button class="btn ghost no-print" id="btnRefaire">Refaire le bilan</button>
-  <a class="btn ghost no-print" id="btnRetourCoach" href="coach.html" style="display:none;text-align:center">← Retour à l'espace coach</a>
+  <button class="btn ghost no-print" id="btnRefaire">Modifier mes réponses</button>
 
   <footer>Olympe Athlétique · Bâtis ton corps comme un temple, règle-le comme une horloge.</footer>
 </section>
@@ -332,7 +345,7 @@ const QUESTIONS = {
 const COACH_DEFAUT = { actif:false, debut:"08:00", fin:"18:00", motif:"", poidsCible:null, tourCible:null };
 const MESURES_DEFAUT = { taille:null, sexe:"h", entrees:[] };
 const etat = {
-  prenom:"", objectif:"", reponses:{physique:{},mental:{},habitudes:{}},
+  prenom:"", objectif:"", commentaire:"", reponses:{physique:{},mental:{},habitudes:{}},
   coach:{...COACH_DEFAUT}, mesures:{...MESURES_DEFAUT, entrees:[]}
 };
 const esc = s => String(s??"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -354,7 +367,7 @@ const IDS_HORAIRES = ["s-reveil","s-alarme","s-premiere","s-derniere","s-ecrans"
 function collecter(){
   const horaires = {};
   IDS_HORAIRES.forEach(id=>horaires[id]=document.getElementById(id).value);
-  return { prenom:etat.prenom, objectif:etat.objectif, reponses:etat.reponses, horaires, coach:etat.coach, mesures:etat.mesures, date:new Date().toISOString() };
+  return { prenom:etat.prenom, objectif:etat.objectif, commentaire:etat.commentaire, reponses:etat.reponses, horaires, coach:etat.coach, mesures:etat.mesures, date:new Date().toISOString() };
 }
 async function sauvegarder(){
   if(!cibleUserId) return;
@@ -378,12 +391,14 @@ function prochainEcran(){
 function restaurer(d){
   etat.prenom = d.prenom || "";
   etat.objectif = d.objectif || "";
+  etat.commentaire = d.commentaire || "";
   etat.reponses = d.reponses || {physique:{},mental:{},habitudes:{}};
   etat.coach = {...COACH_DEFAUT, ...(d.coach||{})};
   etat.mesures = {...MESURES_DEFAUT, ...(d.mesures||{})};
   if(!Array.isArray(etat.mesures.entrees)) etat.mesures.entrees = [];
   majSuivi();
   document.getElementById("prenom").value = etat.prenom;
+  document.getElementById("commentaire").value = etat.commentaire;
   document.querySelectorAll("#objectifs .choice").forEach(b=>b.classList.toggle("sel", b.dataset.obj===etat.objectif));
   if(d.horaires) Object.entries(d.horaires).forEach(([id,v])=>{ const el=document.getElementById(id); if(el && v!==undefined) el.value=v; });
   ["physique","mental","habitudes"].forEach(sec=>{
@@ -422,7 +437,7 @@ function go(id){
   }
   document.querySelector(".prog").style.display = id === "ecran-login" ? "none" : "";
   const MENU_ECRAN = {"ecran-accueil":"ecran-accueil","ecran-physique":"ecran-resultats","ecran-mental":"ecran-resultats","ecran-habitudes":"ecran-resultats","ecran-horaires":"ecran-resultats","ecran-resultats":"ecran-resultats","ecran-suivi":"ecran-suivi"};
-  document.querySelectorAll("#menuClient [data-go]").forEach(b=>b.classList.toggle("actif", b.dataset.go === MENU_ECRAN[id]));
+  document.querySelectorAll(".menu-client [data-go]").forEach(b=>b.classList.toggle("actif", b.dataset.go === MENU_ECRAN[id]));
   window.scrollTo({top:0,behavior:"smooth"});
 }
 document.getElementById("btnSuiviAccueil").addEventListener("click",()=>go("ecran-suivi"));
@@ -431,10 +446,10 @@ document.getElementById("btnSuiviRetour").addEventListener("click",()=>{
   if(ecranPrecedent==="ecran-resultats" && bilanComplet()) afficherResultats(true);
   go(ecranPrecedent);
 });
-document.querySelectorAll("#menuClient [data-go]").forEach(b=>{
+document.querySelectorAll(".menu-client [data-go]").forEach(b=>{
   b.addEventListener("click",()=>{
     const id = b.dataset.go;
-    if(id==="ecran-resultats"){
+    if(id==="ecran-resultats" && !modeCoach){
       if(bilanComplet()) afficherResultats();
       else go(prochainEcran());
     } else go(id);
@@ -448,6 +463,7 @@ function checkStart(){
   btnStart.disabled = !(etat.prenom && etat.objectif);
 }
 document.getElementById("prenom").addEventListener("input", ()=>{ checkStart(); planifierSauvegarde(); });
+document.getElementById("commentaire").addEventListener("input", ()=>{ etat.commentaire = document.getElementById("commentaire").value; planifierSauvegarde(); });
 document.querySelectorAll("#objectifs .choice").forEach(b=>{
   b.addEventListener("click",()=>{
     document.querySelectorAll("#objectifs .choice").forEach(x=>x.classList.remove("sel"));
@@ -500,7 +516,7 @@ const span = (debut,fin)=> norm(fin-debut); // durée debut→fin dans le sens h
 
 /* ══════════ CALCUL & AFFICHAGE RÉSULTATS ══════════ */
 document.getElementById("btnResultats").addEventListener("click", ()=>afficherResultats());
-document.getElementById("btnRefaire").addEventListener("click",()=>location.reload());
+document.getElementById("btnRefaire").addEventListener("click",()=>go("ecran-physique"));
 document.getElementById("ecran-horaires").addEventListener("change", planifierSauvegarde);
 
 function afficherResultats(rerendu){
@@ -553,6 +569,15 @@ function afficherResultats(rerendu){
   document.getElementById("rappelObjectif").innerHTML = `Ton objectif : <b>${objTxt}</b> · fenêtre cible <b>${cible.txt}</b>`;
   document.getElementById("titrePlan").textContent = `Ton plan personnalisé, ${etat.prenom}`;
 
+  const cCom = document.getElementById("carteCommentaire");
+  if(etat.commentaire && etat.commentaire.trim()){
+    cCom.style.display = "block";
+    document.getElementById("titreCommentaire").textContent = modeCoach ? `Message de ${etat.prenom}` : "Ton message pour ton coach";
+    document.getElementById("texteCommentaire").textContent = etat.commentaire;
+  } else {
+    cCom.style.display = "none";
+  }
+
   // Scores
   const grid = document.getElementById("scoreGrid");
   grid.innerHTML = "";
@@ -564,13 +589,18 @@ function afficherResultats(rerendu){
   const v1 = document.getElementById("verdictsTest1");
   v1.innerHTML = "";
   const verdict = (niveau, txt)=> v1.innerHTML += `<div class="verdict"><span class="dot ${niveau}"></span><span>${txt}</span></div>`;
-  if (sPhy>=3) verdict("r",`<b>${sPhy} « oui » côté physique.</b> Selon le Dr Panda, 3 ou plus dans cette section indique un rythme circadien probablement non optimal. Bonne nouvelle : ces symptômes sont justement ceux qui répondent le mieux au protocole.`);
-  else verdict("v",`Côté physique (${sPhy}/15), tu es dans la norme du livre — 1 à 2 « oui » sont courants.`);
-  if (sMen>=3) verdict("r",`<b>${sMen} « oui » côté mental et énergie.</b> Là aussi, 3 ou plus = signe d'un rythme désynchronisé. Concentration, humeur et fringales s'améliorent typiquement en 2 à 4 semaines de protocole.`);
-  else verdict("v",`Côté mental et énergie (${sMen}/15), rien d'alarmant.`);
+  const detailOui = section => {
+    const items = QUESTIONS[section].filter((_,i)=>etat.reponses[section][i]===1);
+    if(!items.length) return "";
+    return `<ul style="margin:8px 0 0 18px;font-size:14px;color:#4a4d55">${items.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`;
+  };
+  if (sPhy>=3) verdict("r",`<b>${sPhy} « oui » côté physique.</b> Selon le Dr Panda, 3 ou plus dans cette section indique un rythme circadien probablement non optimal. Bonne nouvelle : ces symptômes sont justement ceux qui répondent le mieux au protocole.${detailOui("physique")}`);
+  else verdict("v",`Côté physique (${sPhy}/15), tu es dans la norme du livre — 1 à 2 « oui » sont courants.${detailOui("physique")}`);
+  if (sMen>=3) verdict("r",`<b>${sMen} « oui » côté mental et énergie.</b> Là aussi, 3 ou plus = signe d'un rythme désynchronisé. Concentration, humeur et fringales s'améliorent typiquement en 2 à 4 semaines de protocole.${detailOui("mental")}`);
+  else verdict("v",`Côté mental et énergie (${sMen}/15), rien d'alarmant.${detailOui("mental")}`);
   verdict(sHab>=5?"r":(sHab>=1?"o":"v"),
-    sHab===0 ? "Aucune habitude perturbatrice détectée — rare et excellent." :
-    `<b>${sHab} habitude${sHab>1?"s":""} qui perturbe${sHab>1?"nt":""} ton horloge.</b> Chacune est un levier concret : le plan ci-dessous les traite une par une.`);
+    (sHab===0 ? "Aucune habitude perturbatrice détectée — rare et excellent." :
+    `<b>${sHab} habitude${sHab>1?"s":""} qui perturbe${sHab>1?"nt":""} ton horloge.</b> Chacune est un levier concret : le plan ci-dessous les traite une par une.`) + detailOui("habitudes"));
 
   // KPIs
   const k = document.getElementById("kpis");
@@ -900,7 +930,6 @@ function desactiverPourCoach(){
   ["m-taille","m-sexe","m-date","m-poids","m-tour","btnMesure"].forEach(id=>document.getElementById(id).disabled = true);
   IDS_HORAIRES.forEach(id=>{ const el=document.getElementById(id); if(el) el.disabled = true; });
   document.getElementById("btnRefaire").style.display = "none";
-  document.getElementById("btnRetourCoach").style.display = "block";
   document.getElementById("bandeauCoach").style.display = "block";
   document.getElementById("bandeauCoach").textContent = `Vue coach : tu consultes le bilan de ${etat.prenom || "ce client"}. Le formulaire de test n'est pas modifiable ici — seul l'ajustement ci-dessous l'est.`;
 }
@@ -922,20 +951,21 @@ async function demarrerApp(){
     if(!clientParam){ location.href = "coach.html"; return; }
     modeCoach = true;
     cibleUserId = clientParam;
+    document.getElementById("menuCoach").style.display = "flex";
     document.getElementById("coachEdit").style.display = "block";
     document.getElementById("ciblesEdit").style.display = "block";
     const d = await chargerBilan(cibleUserId);
     if(!d || !d.prenom){
-      document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-      document.getElementById("ecran-resultats").classList.add("active");
       document.getElementById("scoreGrid").innerHTML = "";
       document.getElementById("verdictsTest1").innerHTML = "";
       document.getElementById("titreResultats").textContent = "Ce client n'a pas encore de bilan";
       document.getElementById("rappelObjectif").textContent = "";
+      document.getElementById("carteCommentaire").style.display = "none";
       document.getElementById("bandeauCoach").style.display = "block";
-      document.getElementById("bandeauCoach").innerHTML = `Aucun bilan trouvé pour ce compte pour l'instant. <a href="coach.html">← Retour à l'espace coach</a>`;
+      document.getElementById("bandeauCoach").textContent = "Aucun bilan trouvé pour ce compte pour l'instant — utilise le menu ci-dessus pour revenir à la liste des clients.";
       ["kpis","cadran","recoTRE","recoNutrition","recoSport","recoSommeil"].forEach(id=>document.getElementById(id).innerHTML="");
       document.getElementById("carteCoach").style.display = "none";
+      go("ecran-resultats");
       return;
     }
     restaurer(d);
@@ -943,39 +973,37 @@ async function demarrerApp(){
     desactiverPourCoach();
     if(bilanComplet()){
       afficherResultats(true);
-      document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-      document.getElementById("ecran-resultats").classList.add("active");
     } else {
-      document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-      document.getElementById("ecran-resultats").classList.add("active");
       document.getElementById("titreResultats").textContent = `${etat.prenom || "Ce client"} n'a pas terminé son bilan`;
       document.getElementById("rappelObjectif").textContent = "";
-      document.getElementById("bandeauCoach").innerHTML = `Bilan en cours (${Object.keys(etat.reponses.physique).length+Object.keys(etat.reponses.mental).length+Object.keys(etat.reponses.habitudes).length}/45 réponses). Tu peux déjà fixer un ajustement ci-dessous si besoin. <a href="coach.html">← Retour à l'espace coach</a>`;
+      document.getElementById("bandeauCoach").innerHTML = `Bilan en cours (${Object.keys(etat.reponses.physique).length+Object.keys(etat.reponses.mental).length+Object.keys(etat.reponses.habitudes).length}/45 réponses). Tu peux déjà fixer un ajustement ci-dessous si besoin.`;
     }
+    go("ecran-resultats");
   } else {
     modeCoach = false;
     cibleUserId = monUserId;
     document.getElementById("menuClient").style.display = "flex";
     document.getElementById("m-date").value = new Date().toISOString().slice(0,10);
-    document.getElementById("btnEffacer").addEventListener("click", async ()=>{
+    document.getElementById("btnEffacer").onclick = async ()=>{
       if(!confirm("Effacer définitivement ton bilan enregistré ?")) return;
       await sb.from("bilans").delete().eq("user_id", monUserId);
       location.reload();
-    });
+    };
     const d = await chargerBilan(monUserId);
     if(d && d.prenom){
       restaurer(d);
-      if(bilanComplet()){
+      const complet = bilanComplet();
+      // Carte toujours prête sur l'accueil (accessible via le menu), même quand on atterrit directement sur le diagnostic.
+      const dateTxt = d.date ? new Date(d.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : "";
+      document.getElementById("carteReprise").style.display = "block";
+      document.getElementById("repriseInfo").textContent = `${d.prenom} · enregistré le ${dateTxt}${complet ? "" : " · bilan en cours"}`;
+      const btnVoir = document.getElementById("btnVoirBilan");
+      btnVoir.textContent = complet ? "Revoir mon diagnostic" : "Reprendre où j'en étais";
+      btnVoir.onclick = ()=>{ complet ? afficherResultats() : go(prochainEcran()); };
+      if(complet){
         // Bilan déjà rempli : on va directement au diagnostic, pas besoin de repasser par l'accueil.
         afficherResultats();
       } else {
-        const dateTxt = d.date ? new Date(d.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : "";
-        const carte = document.getElementById("carteReprise");
-        carte.style.display = "block";
-        document.getElementById("repriseInfo").textContent = `${d.prenom} · enregistré le ${dateTxt} · bilan en cours`;
-        const btnVoir = document.getElementById("btnVoirBilan");
-        btnVoir.textContent = "Reprendre où j'en étais";
-        btnVoir.addEventListener("click",()=>go(prochainEcran()));
         go("ecran-accueil");
       }
     } else {

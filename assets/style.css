@@ -53,6 +53,8 @@ p.lead{font-size:17px;color:#3d4048;max-width:56ch}
 .menu-client button{background:none;border:none;font:inherit;font-size:13.5px;font-weight:600;color:var(--gris);cursor:pointer;padding:2px 0}
 .menu-client button:hover{color:var(--encre)}
 .menu-client button.actif{color:var(--or)}
+.menu-client a{font-size:13.5px;font-weight:600;color:var(--gris);text-decoration:none;padding:2px 0}
+.menu-client a:hover{color:var(--encre)}
 
 /* Progress */
 .prog{position:sticky;top:0;background:var(--fond);z-index:10;padding:14px 0 10px;border-bottom:1px solid var(--ligne)}
