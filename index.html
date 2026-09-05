@@ -21,6 +21,12 @@
   </div>
 </header>
 
+<nav class="menu-client no-print" id="menuClient" style="display:none">
+  <button type="button" data-go="ecran-accueil">Accueil</button>
+  <button type="button" data-go="ecran-resultats" id="menuBilan">Mon bilan</button>
+  <button type="button" data-go="ecran-suivi">Mon suivi</button>
+</nav>
+
 <div class="prog no-print">
   <div class="prog-steps" id="progSteps">
     <span class="on"></span><span></span><span></span><span></span><span></span><span></span>
@@ -142,6 +148,7 @@
 <section class="screen" id="ecran-resultats">
   <span class="chip">Diagnostic</span>
   <h1 id="titreResultats">Ton code circadien</h1>
+  <p class="lead" id="rappelObjectif" style="margin-top:-6px"></p>
 
   <div class="info-box no-print" id="bandeauCoach" style="display:none"></div>
 
@@ -338,9 +345,10 @@ let cibleUserId = null;    // id du compte dont on affiche/édite le bilan
 
 /* ══════════ SAUVEGARDE (Supabase) ══════════ */
 async function chargerBilan(userId){
-  const { data, error } = await sb.from("bilans").select("data,updated_at").eq("user_id", userId).maybeSingle();
+  const { data: ligne, error } = await sb.from("bilans").select("data,updated_at").eq("user_id", userId).maybeSingle();
   if(error){ console.error(error); return null; }
-  return data;
+  if(!ligne) return null;
+  return { ...ligne.data, updated_at: ligne.updated_at };
 }
 const IDS_HORAIRES = ["s-reveil","s-alarme","s-premiere","s-derniere","s-ecrans","s-coucher","s-sport","w-reveil","w-premiere","w-derniere","w-coucher"];
 function collecter(){
@@ -358,7 +366,7 @@ async function sauvegarder(){
   } else console.error(error);
 }
 let timerSauv = null;
-function planifierSauvegarde(){ if(modeCoach) return; clearTimeout(timerSauv); timerSauv = setTimeout(sauvegarder, 600); }
+function planifierSauvegarde(){ majMenuBilan(); if(modeCoach) return; clearTimeout(timerSauv); timerSauv = setTimeout(sauvegarder, 600); }
 function bilanComplet(){
   return ["physique","mental","habitudes"].every(s=>Object.keys(etat.reponses[s]).length===QUESTIONS[s].length);
 }
@@ -387,6 +395,14 @@ function restaurer(d){
     majBouton(sec);
   });
   checkStart();
+  majMenuBilan();
+}
+function majMenuBilan(){
+  const btn = document.getElementById("menuBilan");
+  if(!btn) return;
+  if(bilanComplet()){ btn.textContent = "Mon bilan"; return; }
+  const enCours = !!(etat.prenom || etat.objectif || ["physique","mental","habitudes"].some(s=>Object.keys(etat.reponses[s]).length>0));
+  btn.textContent = enCours ? "Continuer mon bilan" : "Commencer mon bilan";
 }
 const ECRANS = ["ecran-accueil","ecran-physique","ecran-mental","ecran-habitudes","ecran-horaires","ecran-resultats"];
 const LABELS = ["Accueil","Test 1 · Physique","Test 1 · Mental","Test 1 · Habitudes","Test 2 · Horaires","Diagnostic"];
@@ -405,6 +421,8 @@ function go(id){
     document.getElementById("progTxt").textContent = id === "ecran-login" ? "Connexion" : "Suivi hebdomadaire";
   }
   document.querySelector(".prog").style.display = id === "ecran-login" ? "none" : "";
+  const MENU_ECRAN = {"ecran-accueil":"ecran-accueil","ecran-physique":"ecran-resultats","ecran-mental":"ecran-resultats","ecran-habitudes":"ecran-resultats","ecran-horaires":"ecran-resultats","ecran-resultats":"ecran-resultats","ecran-suivi":"ecran-suivi"};
+  document.querySelectorAll("#menuClient [data-go]").forEach(b=>b.classList.toggle("actif", b.dataset.go === MENU_ECRAN[id]));
   window.scrollTo({top:0,behavior:"smooth"});
 }
 document.getElementById("btnSuiviAccueil").addEventListener("click",()=>go("ecran-suivi"));
@@ -412,6 +430,15 @@ document.getElementById("btnSuiviResultats").addEventListener("click",()=>go("ec
 document.getElementById("btnSuiviRetour").addEventListener("click",()=>{
   if(ecranPrecedent==="ecran-resultats" && bilanComplet()) afficherResultats(true);
   go(ecranPrecedent);
+});
+document.querySelectorAll("#menuClient [data-go]").forEach(b=>{
+  b.addEventListener("click",()=>{
+    const id = b.dataset.go;
+    if(id==="ecran-resultats"){
+      if(bilanComplet()) afficherResultats();
+      else go(prochainEcran());
+    } else go(id);
+  });
 });
 
 /* ══════════ ACCUEIL ══════════ */
@@ -521,7 +548,9 @@ function afficherResultats(rerendu){
   }
 
   // Titre
+  const objTxt = {perte:"perte de poids", perf:"performance", sante:"santé et sommeil"}[etat.objectif];
   document.getElementById("titreResultats").innerHTML = `${esc(etat.prenom)}, voici ton <em>code circadien</em>`;
+  document.getElementById("rappelObjectif").innerHTML = `Ton objectif : <b>${objTxt}</b> · fenêtre cible <b>${cible.txt}</b>`;
   document.getElementById("titrePlan").textContent = `Ton plan personnalisé, ${etat.prenom}`;
 
   // Scores
@@ -567,7 +596,6 @@ function afficherResultats(rerendu){
   /* ── RECO 1 : TRE ── */
   const recoTRE = document.getElementById("recoTRE");
   let html = "";
-  const objTxt = {perte:"perte de poids", perf:"performance", sante:"santé et sommeil"}[etat.objectif];
   html += `<p style="font-size:15px">Objectif <b>${objTxt}</b> → fenêtre cible : <b>${cible.txt}</b>, soit <span class="horaire">${fmtH(cibleDebut)} → ${fmtH(cibleFin)}</span> (première gorgée de café comprise, dernière bouchée 3 h avant ton coucher).</p>`;
   if (fenetre > cible.h*60){
     const paliers = [];
@@ -903,6 +931,7 @@ async function demarrerApp(){
       document.getElementById("scoreGrid").innerHTML = "";
       document.getElementById("verdictsTest1").innerHTML = "";
       document.getElementById("titreResultats").textContent = "Ce client n'a pas encore de bilan";
+      document.getElementById("rappelObjectif").textContent = "";
       document.getElementById("bandeauCoach").style.display = "block";
       document.getElementById("bandeauCoach").innerHTML = `Aucun bilan trouvé pour ce compte pour l'instant. <a href="coach.html">← Retour à l'espace coach</a>`;
       ["kpis","cadran","recoTRE","recoNutrition","recoSport","recoSommeil"].forEach(id=>document.getElementById(id).innerHTML="");
@@ -920,30 +949,38 @@ async function demarrerApp(){
       document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
       document.getElementById("ecran-resultats").classList.add("active");
       document.getElementById("titreResultats").textContent = `${etat.prenom || "Ce client"} n'a pas terminé son bilan`;
+      document.getElementById("rappelObjectif").textContent = "";
       document.getElementById("bandeauCoach").innerHTML = `Bilan en cours (${Object.keys(etat.reponses.physique).length+Object.keys(etat.reponses.mental).length+Object.keys(etat.reponses.habitudes).length}/45 réponses). Tu peux déjà fixer un ajustement ci-dessous si besoin. <a href="coach.html">← Retour à l'espace coach</a>`;
     }
   } else {
     modeCoach = false;
     cibleUserId = monUserId;
+    document.getElementById("menuClient").style.display = "flex";
+    document.getElementById("m-date").value = new Date().toISOString().slice(0,10);
+    document.getElementById("btnEffacer").addEventListener("click", async ()=>{
+      if(!confirm("Effacer définitivement ton bilan enregistré ?")) return;
+      await sb.from("bilans").delete().eq("user_id", monUserId);
+      location.reload();
+    });
     const d = await chargerBilan(monUserId);
     if(d && d.prenom){
       restaurer(d);
-      const complet = bilanComplet();
-      const carte = document.getElementById("carteReprise");
-      carte.style.display = "block";
-      const dateTxt = d.date ? new Date(d.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : "";
-      document.getElementById("repriseInfo").textContent = `${d.prenom} · enregistré le ${dateTxt}${complet ? "" : " · bilan en cours"}`;
-      const btnVoir = document.getElementById("btnVoirBilan");
-      btnVoir.textContent = complet ? "Revoir mon diagnostic" : "Reprendre où j'en étais";
-      btnVoir.addEventListener("click",()=>{ complet ? afficherResultats() : go(prochainEcran()); });
-      document.getElementById("btnEffacer").addEventListener("click", async ()=>{
-        if(!confirm("Effacer définitivement ton bilan enregistré ?")) return;
-        await sb.from("bilans").delete().eq("user_id", monUserId);
-        location.reload();
-      });
+      if(bilanComplet()){
+        // Bilan déjà rempli : on va directement au diagnostic, pas besoin de repasser par l'accueil.
+        afficherResultats();
+      } else {
+        const dateTxt = d.date ? new Date(d.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : "";
+        const carte = document.getElementById("carteReprise");
+        carte.style.display = "block";
+        document.getElementById("repriseInfo").textContent = `${d.prenom} · enregistré le ${dateTxt} · bilan en cours`;
+        const btnVoir = document.getElementById("btnVoirBilan");
+        btnVoir.textContent = "Reprendre où j'en étais";
+        btnVoir.addEventListener("click",()=>go(prochainEcran()));
+        go("ecran-accueil");
+      }
+    } else {
+      go("ecran-accueil");
     }
-    document.getElementById("m-date").value = new Date().toISOString().slice(0,10);
-    go("ecran-accueil");
   }
 }
 

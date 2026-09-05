@@ -48,6 +48,12 @@ p.lead{font-size:17px;color:#3d4048;max-width:56ch}
 .compte-bar a,.compte-bar button.lien{background:none;border:none;color:var(--ciel);cursor:pointer;font:inherit;font-size:12.5px;text-decoration:underline;padding:0}
 .badge-role{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--or-clair);color:#8a5f10;border-radius:6px;padding:2px 7px;margin-left:6px}
 
+/* Menu client */
+.menu-client{display:flex;gap:20px;padding:10px 0;border-bottom:1px solid var(--ligne)}
+.menu-client button{background:none;border:none;font:inherit;font-size:13.5px;font-weight:600;color:var(--gris);cursor:pointer;padding:2px 0}
+.menu-client button:hover{color:var(--encre)}
+.menu-client button.actif{color:var(--or)}
+
 /* Progress */
 .prog{position:sticky;top:0;background:var(--fond);z-index:10;padding:14px 0 10px;border-bottom:1px solid var(--ligne)}
 .prog-steps{display:flex;gap:6px}
